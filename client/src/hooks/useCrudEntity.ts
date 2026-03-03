@@ -1,12 +1,19 @@
-// > CRUD ENTITY : artists & label //
 import { useState, useCallback } from 'react';
 
-function useCrudEntity({ listEndpoint, baseEndpoint }) {
+interface UseCrudEntityParams {
+  listEndpoint: string;
+  baseEndpoint: string;
+}
+
+function useCrudEntity<T>({
+  listEndpoint,
+  baseEndpoint,
+}: UseCrudEntityParams) {
   const backendUrl = import.meta.env.VITE_BACKEND_URL;
 
-  const [data, setData] = useState([]);
-  const [loading, setLoading] = useState(false);
-  const [error, setError] = useState(null);
+  const [data, setData] = useState<T[]>([]);
+  const [loading, setLoading] = useState<boolean>(false);
+  const [error, setError] = useState<string | null>(null);
 
   /* =======================
         FETCH ALL
@@ -19,10 +26,14 @@ function useCrudEntity({ listEndpoint, baseEndpoint }) {
       const res = await fetch(`${backendUrl}${listEndpoint}`);
       if (!res.ok) throw new Error('Erreur serveur');
 
-      const result = await res.json();
+      const result: T[] = await res.json();
       setData(result);
     } catch (err) {
-      setError(err.message);
+      if (err instanceof Error) {
+        setError(err.message);
+      } else {
+        setError('Erreur inconnue');
+      }
     } finally {
       setLoading(false);
     }
@@ -31,7 +42,7 @@ function useCrudEntity({ listEndpoint, baseEndpoint }) {
   /* =======================
         CREATE
   ======================= */
-  const create = async (formData) => {
+  const create = async (formData: FormData): Promise<T> => {
     const res = await fetch(`${backendUrl}${baseEndpoint}`, {
       method: 'POST',
       body: formData,
@@ -39,14 +50,15 @@ function useCrudEntity({ listEndpoint, baseEndpoint }) {
 
     if (!res.ok) throw new Error('Erreur création');
 
+    const result: T = await res.json();
     await fetchAll();
-    return res.json();
+    return result;
   };
 
   /* =======================
         UPDATE
   ======================= */
-  const update = async (id, formData) => {
+  const update = async (id: number, formData: FormData): Promise<T> => {
     const res = await fetch(`${backendUrl}${baseEndpoint}/${id}`, {
       method: 'PUT',
       body: formData,
@@ -54,14 +66,15 @@ function useCrudEntity({ listEndpoint, baseEndpoint }) {
 
     if (!res.ok) throw new Error('Erreur update');
 
+    const result: T = await res.json();
     await fetchAll();
-    return res.json();
+    return result;
   };
 
   /* =======================
         DELETE
   ======================= */
-  const remove = async (id) => {
+  const remove = async (id: number): Promise<void> => {
     const res = await fetch(`${backendUrl}${baseEndpoint}/${id}`, {
       method: 'DELETE',
     });

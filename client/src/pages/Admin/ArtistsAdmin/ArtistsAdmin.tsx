@@ -11,13 +11,30 @@ import {
 } from '@mui/material';
 import CloseIcon from '@mui/icons-material/Close';
 import SearchIcon from '@mui/icons-material/Search';
-import EntityTable from '../../../components/Admin/EntityTable';
-import EntityCreateModal from '../../../components/Admin/EntityCreateModal';
-import EntityDetailModal from '../../../components/Admin/EntityDetailModal';
-import DeleteConfirmDialog from '../../../components/Admin/DeleteConfirmDialog';
-import AdminSnackbar from '../../../components/Admin/AdminSnackbar';
+import EntityTable from '../../../components/Admin/EntityTable.jsx';
+import EntityCreateModal from '../../../components/Admin/EntityCreateModal.jsx';
+import EntityDetailModal from '../../../components/Admin/EntityDetailModal.jsx';
+import DeleteConfirmDialog from '../../../components/Admin/DeleteConfirmDialog.jsx';
+import AdminSnackbar from '../../../components/Admin/AdminSnackbar.jsx';
 import useCrudEntity from '../../../hooks/useCrudEntity';
 import '../adminPage.css';
+
+interface Artist {
+  id: number;
+  name: string;
+  sorted_name: string;
+  image_url: string;
+  release_count: number;
+  discogs_id?: number;
+  discogs_image_url?: string;
+}
+
+interface ArtistForm {
+  name: string;
+  sorted_name: string;
+  image_url: string;
+  discogs_id?: number;
+}
 
 function ArtistAdmin() {
   const backendUrl = import.meta.env.VITE_BACKEND_URL;
@@ -32,7 +49,7 @@ function ArtistAdmin() {
     create,
     update,
     remove,
-  } = useCrudEntity({
+  } = useCrudEntity<Artist>({
     listEndpoint: '/api/artist/admin',
     baseEndpoint: '/api/artist',
   });
@@ -40,31 +57,31 @@ function ArtistAdmin() {
   console.info('artists', artists);
 
   // -- GLOBAL STATES -- //
-  const [selectedArtist, setSelectedArtist] = useState(null);
+  const [selectedArtist, setSelectedArtist] = useState<Artist | null>(null);
   const [searchTerm, setSearchTerm] = useState('');
 
   // -- CREATE STATES -- //
   const [openCreate, setOpenCreate] = useState(false);
-  const [newArtist, setNewArtist] = useState({
+  const [newArtist, setNewArtist] = useState<ArtistForm>({
     name: '',
     sorted_name: '',
-    discogs_id: '',
     image_url: '',
+    discogs_id: undefined,
   });
-  const [previewNewImage, setPreviewNewImage] = useState(null);
-  const [newImageFile, setNewImageFile] = useState(null);
+  const [previewNewImage, setPreviewNewImage] = useState<string | null>(null);
+  const [newImageFile, setNewImageFile] = useState<File | null>(null);
   const [uploadingNew, setUploadingNew] = useState(false);
 
   // --  UPDATE / EDIT STATES --/
   const [openDetail, setOpenDetail] = useState(false);
   const [editMode, setEditMode] = useState(false);
-  const [editedArtist, setEditedArtist] = useState({});
-  const [previewEditImage, setPreviewEditImage] = useState(null);
+  const [editedArtist, setEditedArtist] = useState<Artist | null>(null);
+  const [previewEditImage, setPreviewEditImage] = useState<string | null>(null);
   const [uploading, setUploading] = useState(false);
 
   // --  DELETE STATES --//
 
-  const [artistToDelete, setArtistToDelete] = useState(null);
+  const [artistToDelete, setArtistToDelete] = useState<Artist | null>(null);
   const [confirmOpen, setConfirmOpen] = useState(false);
 
   // --  FETCHING EXTERNES STATES --//
@@ -77,9 +94,21 @@ function ArtistAdmin() {
 
   // --  SNACKBAR STATES --//
 
-  const [snackbar, setSnackbar] = useState({ open: false, message: '', severity: 'success' });
-  const showSnackbar = (message, severity = 'success') =>
+  type SnackbarSeverity = 'success' | 'error' | 'warning' | 'info';
+
+  const [snackbar, setSnackbar] = useState<{
+    open: boolean;
+    message: string;
+    severity: SnackbarSeverity;
+  }>({
+    open: false,
+    message: '',
+    severity: 'success',
+  });
+
+  const showSnackbar = (message: string, severity: SnackbarSeverity = 'success') => {
     setSnackbar({ open: true, message, severity });
+  };
 
   // ---------------------------
   //  FETCH ARTISTS
@@ -118,7 +147,7 @@ function ArtistAdmin() {
   };
 
   const handleFetchDiscogsForEdit = async () => {
-    if (!editedArtist.discogs_id) return;
+    if (!editedArtist || !editedArtist.discogs_id) return;
 
     try {
       setFetchingDiscogs(true);
@@ -127,16 +156,16 @@ function ArtistAdmin() {
       );
       if (!res.ok) throw new Error('Erreur Discogs');
 
-      const data = await res.json();
+      const discogsData = await res.json();
 
-      setEditedArtist((prev) => ({
-        ...prev,
-        name: data.name || prev.name,
-        sorted_name: data.sorted_name || prev.sorted_name,
-        discogs_image_url: data.image_url || prev.discogs_image_url,
-      }));
+      setEditedArtist({
+        ...editedArtist,
+        name: discogsData.name ?? editedArtist.name,
+        sorted_name: discogsData.sorted_name ?? editedArtist.sorted_name,
+        discogs_image_url: discogsData.image_url ?? editedArtist.discogs_image_url,
+      });
 
-      if (data.image_url) setPreviewEditImage(data.image_url);
+      if (discogsData.image_url) setPreviewEditImage(discogsData.image_url);
     } catch (err) {
       console.error(err);
       showSnackbar('Erreur récupération Discogs', 'error');
@@ -154,8 +183,10 @@ function ArtistAdmin() {
       const formData = new FormData();
       formData.append('name', newArtist.name);
       formData.append('sorted_name', newArtist.sorted_name);
-      formData.append('discogs_id', newArtist.discogs_id);
 
+      if (newArtist.discogs_id !== undefined) {
+        formData.append('discogs_id', String(newArtist.discogs_id));
+      }
       if (newImageFile) formData.append('file', newImageFile);
       if (!newImageFile && newArtist.image_url?.startsWith('http')) {
         formData.append('discogs_image_url', newArtist.image_url);
@@ -166,18 +197,27 @@ function ArtistAdmin() {
       showSnackbar('Artiste créé avec succès', 'success');
 
       setOpenCreate(false);
-      setNewArtist({ name: '', sorted_name: '', discogs_id: '', image_url: '' });
+      setNewArtist({
+        name: '',
+        sorted_name: '',
+        image_url: '',
+        discogs_id: undefined,
+      });
       console.info('newArtist', newArtist);
       setPreviewNewImage(null);
       setNewImageFile(null);
     } catch (err) {
-      showSnackbar(err.message, 'error');
+      if (err instanceof Error) {
+        showSnackbar(err.message, 'error');
+      } else {
+        showSnackbar('Erreur inconnue', 'error');
+      }
     } finally {
       setUploadingNew(false);
     }
   };
 
-  const handleNewImageUpload = (file) => {
+  const handleNewImageUpload = (file: File | null) => {
     if (!file) return;
     setNewImageFile(file);
     setPreviewNewImage(URL.createObjectURL(file));
@@ -194,7 +234,10 @@ function ArtistAdmin() {
       const formData = new FormData();
       formData.append('name', editedArtist.name);
       formData.append('sorted_name', editedArtist.sorted_name);
-      if (editedArtist.discogs_id) formData.append('discogs_id', editedArtist.discogs_id);
+
+      if (editedArtist.discogs_id !== undefined) {
+        formData.append('discogs_id', String(editedArtist.discogs_id));
+      }
       if (editedArtist.discogs_image_url && !newImageFile) {
         formData.append('discogs_image_url', editedArtist.discogs_image_url);
       }
@@ -202,23 +245,29 @@ function ArtistAdmin() {
 
       const data = await update(editedArtist.id, formData);
 
-      setEditedArtist((prev) => ({
-        ...prev,
-        image_url: data.image_filename || prev.image_url,
-      }));
+      // setEditedArtist((prev) => ({
+      //   ...prev,
+      //   image_url: data.image_filename || prev.image_url,
+      // }));
+
+      setEditedArtist(data);
 
       setPreviewEditImage(null);
       setNewImageFile(null);
       setEditMode(false);
       showSnackbar('Artiste mis à jour', 'success');
     } catch (err) {
-      showSnackbar(err.message, 'error');
+      if (err instanceof Error) {
+        showSnackbar(err.message, 'error');
+      } else {
+        showSnackbar('Erreur inconnue', 'error');
+      }
     } finally {
       setUploading(false);
     }
   };
 
-  const handleEditImageUpload = (file) => {
+  const handleEditImageUpload = (file: File | null) => {
     if (!file) return;
     setNewImageFile(file);
     setPreviewEditImage(URL.createObjectURL(file));
@@ -228,13 +277,18 @@ function ArtistAdmin() {
   //  DELETE ARTIST
   // ---------------------------
   const handleDeleteConfirmed = async () => {
+    if (!artistToDelete) return;
     try {
       await remove(artistToDelete.id);
       showSnackbar('Artiste supprimé', 'success');
       setConfirmOpen(false);
       setArtistToDelete(null);
     } catch (err) {
-      showSnackbar(err.message, 'error');
+      if (err instanceof Error) {
+        showSnackbar(err.message, 'error');
+      } else {
+        showSnackbar('Erreur inconnue', 'error');
+      }
     }
   };
 
@@ -322,9 +376,11 @@ function ArtistAdmin() {
         totalCount={filteredArtists.length}
         page={page}
         rowsPerPage={rowsPerPage}
-        onPageChange={(e, newPage) => setPage(newPage)}
-        onRowsPerPageChange={(e) => setRowsPerPage(parseInt(e.target.value, 10))}
-        renderRow={(artist) => (
+        onPageChange={(_e: unknown, newPage: number) => setPage(newPage)}
+        onRowsPerPageChange={(e: React.ChangeEvent<HTMLInputElement>) =>
+          setRowsPerPage(parseInt(e.target.value, 10))
+        }
+        renderRow={(artist: Artist) => (
           <>
             <TableCell>{artist.id}</TableCell>
             <TableCell>
@@ -335,14 +391,14 @@ function ArtistAdmin() {
             <TableCell align="center">{artist.release_count}</TableCell>
           </>
         )}
-        onView={(artist) => {
+        onView={(artist: Artist) => {
           setSelectedArtist(artist);
           setEditedArtist({ ...artist });
           setPreviewEditImage(null);
           setOpenDetail(true);
           setEditMode(false);
         }}
-        onDelete={(artist) => {
+        onDelete={(artist: Artist) => {
           setArtistToDelete(artist);
           setConfirmOpen(true);
         }}

@@ -17,6 +17,7 @@ import EntityDetailModal from '../../../components/Admin/EntityDetailModal.jsx';
 import DeleteConfirmDialog from '../../../components/Admin/DeleteConfirmDialog.jsx';
 import AdminSnackbar from '../../../components/Admin/AdminSnackbar.jsx';
 import useCrudEntity from '../../../hooks/useCrudEntity';
+import { BaseEntityForm } from '../../../types/entities';
 import '../adminPage.css';
 
 interface Artist {
@@ -29,10 +30,10 @@ interface Artist {
   discogs_image_url?: string;
 }
 
-interface ArtistForm {
+interface ArtistForm extends BaseEntityForm {
   name: string;
   sorted_name: string;
-  image_url: string;
+  image_url?: string;
   discogs_id?: number;
 }
 
@@ -244,11 +245,6 @@ function ArtistAdmin() {
       if (newImageFile) formData.append('file', newImageFile);
 
       const data = await update(editedArtist.id, formData);
-
-      // setEditedArtist((prev) => ({
-      //   ...prev,
-      //   image_url: data.image_filename || prev.image_url,
-      // }));
 
       setEditedArtist(data);
 

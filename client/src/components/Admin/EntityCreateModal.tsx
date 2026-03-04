@@ -1,4 +1,3 @@
-/* eslint-disable react/prop-types */
 // > ENTITY CREATE MODAL : artists & label //
 import {
   Dialog,
@@ -9,24 +8,35 @@ import {
   TextField,
   Box,
 } from '@mui/material';
+import { BaseEntityForm } from '../../types/entities';
+
+interface EntityCreateModalProps {
+  open: boolean;
+  onClose: () => void;
+  onSubmit: () => void;
+  title: string;
+  formData: BaseEntityForm;
+  setFormData: React.Dispatch<React.SetStateAction<BaseEntityForm>>;
+  getImageSrc: () => string;
+  onImageUpload: (file: File) => void;
+  onFetchExternal: () => void;
+  uploading?: boolean;
+  fetching?: boolean;
+}
 
 function EntityCreateModal({
   open,
   onClose,
   onSubmit,
   title,
-
   formData,
   setFormData,
-
   getImageSrc,
-
   onImageUpload,
   onFetchExternal,
-
   uploading = false,
   fetching = false,
-}) {
+}: EntityCreateModalProps) {
   return (
     <Dialog open={open} onClose={onClose}>
       <DialogTitle>{title}</DialogTitle>
@@ -38,10 +48,16 @@ function EntityCreateModal({
 
         <TextField
           label="Discogs ID"
+          type="number"
           fullWidth
           sx={{ mb: 1 }}
           value={formData.discogs_id || ''}
-          onChange={(e) => setFormData({ ...formData, discogs_id: e.target.value })}
+          onChange={(e) =>
+            setFormData({
+              ...formData,
+              discogs_id: e.target.value ? Number(e.target.value) : undefined,
+            })
+          }
         />
 
         <Button
@@ -75,8 +91,9 @@ function EntityCreateModal({
             type="file"
             hidden
             onChange={(e) => {
-              const file = e.target.files[0];
+              const file = e.target.files?.[0];
               if (!file) return;
+
               onImageUpload(file);
             }}
           />

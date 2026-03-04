@@ -1,4 +1,3 @@
-/* eslint-disable react/prop-types */
 // > ENTITY TABLE : artists & label //
 import {
   Table,
@@ -12,7 +11,28 @@ import {
 import VisibilityIcon from '@mui/icons-material/Visibility';
 import DeleteIcon from '@mui/icons-material/Delete';
 
-function EntityTable({
+interface Column<T> {
+  key: keyof T | string;
+  label: string;
+  width?: string;
+}
+
+interface EntityTableProps<T> {
+  columns: Column<T>[];
+  data: T[];
+  totalCount: number;
+  page: number;
+  rowsPerPage: number;
+
+  onPageChange: (event: unknown, page: number) => void;
+  onRowsPerPageChange: (event: React.ChangeEvent<HTMLInputElement>) => void;
+
+  renderRow: (item: T) => React.ReactNode;
+  onView: (item: T) => void;
+  onDelete: (item: T) => void;
+}
+
+function EntityTable<T extends { id: number }>({
   columns,
   data,
   totalCount,
@@ -23,14 +43,14 @@ function EntityTable({
   renderRow,
   onView,
   onDelete,
-}) {
+}: EntityTableProps<T>) {
   return (
     <>
       <Table sx={{ tableLayout: 'fixed' }}>
         <TableHead>
           <TableRow>
             {columns.map((col) => (
-              <TableCell key={col.key} align="center" sx={{ width: col.width }}>
+              <TableCell key={String(col.key)} align="center" sx={{ width: col.width }}>
                 {col.label}
               </TableCell>
             ))}

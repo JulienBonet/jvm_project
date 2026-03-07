@@ -4,6 +4,15 @@ import { db } from '../../db/connection.js';
    GET
 ========================= */
 
+export const findAllStyles = async () => {
+  const [rows] = await db.query(`
+    SELECT id, name
+    FROM style
+    ORDER BY name ASC
+  `);
+  return rows;
+};
+
 export const findAllStylesOrderById = async () => {
   const [rows] = await db.query(`
     SELECT id, name

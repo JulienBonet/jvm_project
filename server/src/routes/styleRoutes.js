@@ -3,6 +3,7 @@ import * as styleControllers from '../controllers/styleControllers.js';
 
 const router = Router();
 
+router.get('/', styleControllers.getAllStyles);
 router.get('/orderbyid', styleControllers.getAllStylesOrderById);
 router.post('/', styleControllers.createStyle);
 router.get('/:id', styleControllers.getStyleById);

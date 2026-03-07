@@ -4,10 +4,20 @@ import * as styleModels from '../models/styleModels.js';
    GET
 ========================= */
 
+export const getAllStyles = async (req, res, next) => {
+  try {
+    const styles = await styleModels.findAllStyles();
+    res.json(styles);
+  } catch (error) {
+    console.error('findAllStyles:', error);
+    res.status(500).json({ error: 'Erreur serveur' });
+  }
+};
+
 export const getAllStylesOrderById = async (req, res, next) => {
   try {
-    const genres = await styleModels.findAllStylesOrderById();
-    res.json(genres);
+    const styles = await styleModels.findAllStylesOrderById();
+    res.json(styles);
   } catch (error) {
     console.error('findAllStylesOrderById:', error);
     res.status(500).json({ error: 'Erreur serveur' });
@@ -18,8 +28,8 @@ export const getStyleById = async (req, res, next) => {
   const { id } = req.params;
 
   try {
-    const genre = await styleModels.findStyleById(id);
-    res.json(genre);
+    const style = await styleModels.findStyleById(id);
+    res.json(style);
   } catch (error) {
     console.error('findStyleById:', error);
     res.status(500).json({ error: 'Erreur serveur' });

@@ -10,6 +10,7 @@ export const findAllReleases = async () => {
         GROUP_CONCAT(DISTINCT a.name SEPARATOR ', ') AS artists,
         GROUP_CONCAT(DISTINCT l.name SEPARATOR ', ') AS labels,
         GROUP_CONCAT(DISTINCT g.name SEPARATOR ', ') AS genres,
+        GROUP_CONCAT(DISTINCT s.name SEPARATOR ', ') AS styles,
         MAX(i.url) AS image_url,
         d.size AS disc_size,
         d.speed AS disc_speed
@@ -20,6 +21,8 @@ export const findAllReleases = async () => {
     LEFT JOIN label l ON l.id = rl.label_id
     LEFT JOIN release_genre rg ON rg.release_id = r.id
     LEFT JOIN genre g ON g.id = rg.genre_id
+    LEFT JOIN release_style rs ON rs.release_id = r.id
+    LEFT JOIN style s ON s.id = rs.style_id
     LEFT JOIN image i 
         ON i.entity_type = 'release' 
         AND i.entity_id = r.id

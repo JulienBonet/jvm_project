@@ -2,6 +2,7 @@ import { useEffect, useState, useRef } from 'react';
 import { TextField, Select, MenuItem, Button, InputLabel, FormControl } from '@mui/material';
 import InputAdornment from '@mui/material/InputAdornment';
 import IconButton from '@mui/material/IconButton';
+import SearchIcon from '@mui/icons-material/Search';
 import ClearIcon from '@mui/icons-material/Clear';
 import SortByAlphaIcon from '@mui/icons-material/SortByAlpha';
 import CalendarMonthIcon from '@mui/icons-material/CalendarMonth';
@@ -16,9 +17,11 @@ function HomeDesktop() {
   const searchRef = useRef(null);
   const [releases, setReleases] = useState([]);
   const [genres, setGenres] = useState([]);
+  const [styles, setStyles] = useState([]);
   // states filters
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedGenre, setSelectedGenre] = useState('');
+  const [selectedStyle, setSelectedStyle] = useState('');
   const [discFilter, setDiscFilter] = useState('ALL');
   const [alphaOrder, setAlphaOrder] = useState(null);
   const [yearOrder, setYearOrder] = useState(null);
@@ -31,12 +34,13 @@ function HomeDesktop() {
   const [loadingReleases, setLoadingReleases] = useState(true);
 
   console.info('releases', releases);
+  console.info('styles', styles);
 
   const backendUrl = `${import.meta.env.VITE_BACKEND_URL}`;
   const cloudinaryUrl = `${import.meta.env.VITE_CLOUDINARY_BASE_URL}`;
 
   /* =======================
-     FETCH RELEASES
+     FETCHS INITIALS
   ======================= */
   const fetchReleases = async () => {
     try {
@@ -51,10 +55,6 @@ function HomeDesktop() {
     }
   };
 
-  /* =======================
-     FETCH GENRES
-  ======================= */
-
   const fetchGenres = async () => {
     try {
       const res = await fetch(`${backendUrl}/api/genre`);
@@ -65,9 +65,20 @@ function HomeDesktop() {
     }
   };
 
+  const fetchStyles = async () => {
+    try {
+      const res = await fetch(`${backendUrl}/api/style`);
+      const data = await res.json();
+      setStyles(data);
+    } catch (err) {
+      console.error('Erreur fetch styles:', err);
+    }
+  };
+
   useEffect(() => {
     fetchReleases();
     fetchGenres();
+    fetchStyles();
   }, []);
 
   /* =======================
@@ -77,6 +88,7 @@ function HomeDesktop() {
   const handleReset = () => {
     setSearchTerm('');
     setSelectedGenre('');
+    setSelectedStyle('');
     setDiscFilter('ALL');
     setAlphaOrder(null);
     setYearOrder(null);
@@ -111,6 +123,11 @@ function HomeDesktop() {
     // 🎵 Genre
     .filter((release) =>
       selectedGenre ? release.genres?.toLowerCase().includes(selectedGenre.toLowerCase()) : true,
+    )
+
+    // 🎵 Style
+    .filter((release) =>
+      selectedStyle ? release.styles?.toLowerCase().includes(selectedStyle.toLowerCase()) : true,
     )
 
     // 💿 Disc Size
@@ -193,6 +210,7 @@ function HomeDesktop() {
           inputRef={searchRef}
           onChange={(e) => setSearchTerm(e.target.value)}
           InputProps={{
+            startAdornment: <SearchIcon sx={{ mr: 1 }} />,
             endAdornment: searchTerm && (
               <InputAdornment position="end">
                 <IconButton
@@ -210,7 +228,7 @@ function HomeDesktop() {
         />
 
         {/* GENRE SELECT */}
-        <FormControl size="small" style={{ minWidth: 150 }}>
+        <FormControl size="small" style={{ minWidth: 150 }} disabled={selectedStyle !== ''}>
           <InputLabel>Genre</InputLabel>
           <Select
             value={selectedGenre}
@@ -222,6 +240,24 @@ function HomeDesktop() {
             {genres.map((genre) => (
               <MenuItem key={genre.id} value={genre.name}>
                 {genre.name}
+              </MenuItem>
+            ))}
+          </Select>
+        </FormControl>
+
+        {/* GENRE STYLE */}
+        <FormControl size="small" style={{ minWidth: 150 }} disabled={selectedGenre !== ''}>
+          <InputLabel>Style</InputLabel>
+          <Select
+            value={selectedStyle}
+            label="Style"
+            onChange={(e) => setSelectedStyle(e.target.value)}
+          >
+            <MenuItem value="">All</MenuItem>
+
+            {styles.map((style) => (
+              <MenuItem key={style.id} value={style.name}>
+                {style.name}
               </MenuItem>
             ))}
           </Select>

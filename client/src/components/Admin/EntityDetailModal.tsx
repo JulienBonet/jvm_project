@@ -9,7 +9,7 @@ import {
   Box,
   Typography,
 } from '@mui/material';
-import { BaseEntity, EntityEditor } from '../../types/entities';
+import { BaseEntity, EntityEditor } from '../../types/shared/base.types';
 
 
 interface EntityModalProps<T extends BaseEntity> {

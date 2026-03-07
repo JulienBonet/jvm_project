@@ -8,11 +8,7 @@ import EntityDetailModal from '../../../components/Admin/EntityDetailModal02.jsx
 import DeleteConfirmDialog from '../../../components/Admin/DeleteConfirmDialog';
 import AdminSnackbar from '../../../components/Admin/AdminSnackbar';
 import '../adminPage.css';
-
-interface Style {
-  id: number;
-  name: string;
-}
+import { Style} from '../../../types/entities/release.types';
 
 function StylesAdmin() {
   const backendUrl = import.meta.env.VITE_BACKEND_URL;

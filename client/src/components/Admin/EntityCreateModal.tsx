@@ -8,7 +8,7 @@ import {
   TextField,
   Box,
 } from '@mui/material';
-import { BaseEntityForm } from '../../types/entities';
+import { BaseEntityForm } from '../../types/shared/base.types';
 
 interface EntityCreateModalProps {
   open: boolean;

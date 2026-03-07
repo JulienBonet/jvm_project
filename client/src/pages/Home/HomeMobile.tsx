@@ -16,7 +16,7 @@ import { useFormat } from '../../context/FormatContext.js';
 import ReleaseItemMobile from '../../components/ReleaseItemMobile/ReleaseItemMobile.jsx';
 import GroupHeader from '../../components/GroupHeader/GroupHeader.jsx';
 import ReleaseDetailDialogMobile from '../../components/ReleaseDetailDialogMobile/ReleaseDetailDialogMobile';
-import {ReleaseMobile, ReleaseMDetail} from '../../types/entities'
+import {ReleaseMobile, ReleaseMDetail} from '../../types/entities/release.types'
 
 
 type GroupByOption = 'title' | 'artist' | 'label';

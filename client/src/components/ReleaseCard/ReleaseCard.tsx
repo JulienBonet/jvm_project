@@ -1,5 +1,5 @@
 import { Card, CardMedia, CardContent, Typography } from '@mui/material';
-import {Release} from '../../types/entities'
+import {Release} from '../../types/entities/release.types'
 
 interface ReleaseCardProps {
   release: Release;

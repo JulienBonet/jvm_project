@@ -11,7 +11,7 @@ import ArrowDownwardIcon from '@mui/icons-material/ArrowDownward';
 import RestartAltIcon from '@mui/icons-material/RestartAlt';
 import ReleaseCard from '../../components/ReleaseCard/ReleaseCard.jsx';
 import ReleaseDetailDialogDesktop from '../../components/ReleaseDetailDialogDesktop/ReleaseDetailDialogDesktop';
-import { Release, Genre, Style, ReleaseMDetail } from '../../types/entities';
+import { Release, Genre, Style, ReleaseMDetail } from '../../types/entities/release.types';
 import './homeDesktop.css';
 
 function HomeDesktop() {

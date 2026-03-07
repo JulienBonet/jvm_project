@@ -17,7 +17,7 @@ import EntityDetailModal from '../../../components/Admin/EntityDetailModal';
 import DeleteConfirmDialog from '../../../components/Admin/DeleteConfirmDialog';
 import AdminSnackbar from '../../../components/Admin/AdminSnackbar';
 import useCrudEntity from '../../../hooks/useCrudEntity';
-import { Label, LabelForm } from '../../../types/entities';
+import { Label, LabelForm } from '../../../types/entities/label.types';
 import '../adminPage.css';
 
 function LabelsAdmin() {

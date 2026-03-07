@@ -17,7 +17,7 @@ import EntityDetailModal from '../../../components/Admin/EntityDetailModal.jsx';
 import DeleteConfirmDialog from '../../../components/Admin/DeleteConfirmDialog.jsx';
 import AdminSnackbar from '../../../components/Admin/AdminSnackbar.jsx';
 import useCrudEntity from '../../../hooks/useCrudEntity';
-import { Artist, ArtistForm } from '../../../types/entities';
+import { Artist, ArtistForm } from '../../../types/entities/artist.types';
 import '../adminPage.css';
 
 function ArtistAdmin() {

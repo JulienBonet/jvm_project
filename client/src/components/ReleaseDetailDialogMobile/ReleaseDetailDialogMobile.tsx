@@ -11,7 +11,8 @@ import {
 } from '@mui/material';
 import CloseIcon from '@mui/icons-material/Close';
 import DiscogsLogo from '../../assets/images/Discogs.png';
-import { ReleaseMDetail, Track } from '../../types/entities';
+import { ReleaseMDetail } from '../../types/entities/release.types';
+import { Track } from '../../types/entities/track.types';
 
 interface ReleaseDetailDialogMobileProps {
   open: boolean;

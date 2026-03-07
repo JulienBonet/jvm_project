@@ -15,11 +15,7 @@ import EntityDetailModal from '../../../components/Admin/EntityDetailModal02.jsx
 import DeleteConfirmDialog from '../../../components/Admin/DeleteConfirmDialog';
 import AdminSnackbar from '../../../components/Admin/AdminSnackbar';
 import '../adminPage.css';
-
-interface Genre {
-  id: number;
-  name: string;
-}
+import { Genre} from '../../../types/entities/release.types';
 
 function GenresAdmin() {
   const backendUrl = import.meta.env.VITE_BACKEND_URL;

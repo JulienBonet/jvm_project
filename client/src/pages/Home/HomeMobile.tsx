@@ -13,11 +13,10 @@ import {
 import SearchIcon from '@mui/icons-material/Search';
 import ClearIcon from '@mui/icons-material/Clear';
 import { useFormat } from '../../context/FormatContext.js';
-import ReleaseItemMobile from '../../components/ReleaseItemMobile/ReleaseItemMobile';
-import GroupHeader from '../../components/GroupHeader/GroupHeader';
-import ReleaseDetailDialogMobile from '../../components/ReleaseDetailDialogMobile/ReleaseDetailDialogMobile';
-import {ReleaseMobile, ReleaseMDetail} from '../../types/entities/release.types'
-
+import ReleaseItemMobile from '../../components/HomeMobileCompenents/ReleaseItemMobile/ReleaseItemMobile';
+import GroupHeader from '../../components/HomeMobileCompenents/GroupHeader/GroupHeader';
+import ReleaseDetailDialogMobile from '../../components/HomeMobileCompenents/ReleaseDetailDialogMobile/ReleaseDetailDialogMobile';
+import { ReleaseMobile, ReleaseMDetail } from '../../types/entities/release.types';
 
 type GroupByOption = 'title' | 'artist' | 'label';
 

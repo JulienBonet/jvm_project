@@ -1,6 +1,6 @@
 import './releaseItemMobile.css';
 import InfoOutlinedIcon from '@mui/icons-material/InfoOutlined';
-import {ReleaseMobile} from '../../types/entities/release.types'
+import { ReleaseMobile } from '../../../types/entities/release.types';
 
 interface ReleaseItemMobileProps {
   release: ReleaseMobile;

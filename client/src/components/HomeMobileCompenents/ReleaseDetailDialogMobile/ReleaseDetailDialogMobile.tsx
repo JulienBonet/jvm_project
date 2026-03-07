@@ -10,9 +10,9 @@ import {
   Box,
 } from '@mui/material';
 import CloseIcon from '@mui/icons-material/Close';
-import DiscogsLogo from '../../assets/images/Discogs.png';
-import { ReleaseMDetail } from '../../types/entities/release.types';
-import { Track } from '../../types/entities/track.types';
+import DiscogsLogo from '../../../assets/images/Discogs.png';
+import { ReleaseMDetail } from '../../../types/entities/release.types';
+import { Track } from '../../../types/entities/track.types';
 
 interface ReleaseDetailDialogMobileProps {
   open: boolean;

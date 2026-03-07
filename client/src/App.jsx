@@ -1,6 +1,6 @@
 import { Outlet } from 'react-router-dom';
-import { FormatProvider } from './context/FormatContext';
-import Header from './components/Header/Header';
+import { FormatProvider } from './context/FormatContext.tsx';
+import Header from './components/Header/Header.tsx';
 import Footer from './components/Footer/Footer';
 
 function App() {

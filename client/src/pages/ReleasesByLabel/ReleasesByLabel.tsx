@@ -7,22 +7,26 @@ import CalendarMonthIcon from '@mui/icons-material/CalendarMonth';
 import ArrowUpwardIcon from '@mui/icons-material/ArrowUpward';
 import ArrowDownwardIcon from '@mui/icons-material/ArrowDownward';
 import RestartAltIcon from '@mui/icons-material/RestartAlt';
-import ReleaseCard from '../../components/ReleaseCard/ReleaseCard.tsx';
-import ReleaseDetailDialogDesktop from '../../components/ReleaseDetailDialogDesktop/ReleaseDetailDialogDesktop.tsx';
+import ReleaseCard from '../../components/ReleaseCard/ReleaseCard';
+import ReleaseDetailDialogDesktop from '../../components/ReleaseDetailDialogDesktop/ReleaseDetailDialogDesktop';
 import './releasesByLabel.css';
+import { Release, ReleaseMDetail } from '../../types/entities/release.types';
 
 function ReleasesByLabel() {
-  const { id } = useParams();
-  const [releases, setReleases] = useState([]);
-  // filter states
-  const [discFilter, setDiscFilter] = useState('ALL');
-  const [alphaOrder, setAlphaOrder] = useState(null);
-  const [yearOrder, setYearOrder] = useState(null);
-  // states modal
-  const [selectedReleaseId, setSelectedReleaseId] = useState(null);
-  const [releaseDetail, setReleaseDetail] = useState(null);
-  const [loadingDetail, setLoadingDetail] = useState(false);
-  const [openModal, setOpenModal] = useState(false);
+  // -- GLOBAL STATES -- //
+  const { id } = useParams<{ id: string }>();
+  const [releases, setReleases] = useState<Release[]>([]);
+
+  // -- FILTER STATES -- //
+  const [discFilter, setDiscFilter] = useState<'ALL' | '33T' | '45T'>('ALL');
+  const [alphaOrder, setAlphaOrder] = useState<'asc' | 'desc' | null>(null);
+  const [yearOrder, setYearOrder] = useState<'asc' | 'desc' | null>(null);
+
+  // -- MODAL STATES -- //
+  const [selectedReleaseId, setSelectedReleaseId] = useState<number | null>(null);
+  const [releaseDetail, setReleaseDetail] = useState<ReleaseMDetail | null>(null);
+  const [loadingDetail, setLoadingDetail] = useState<boolean>(false);
+  const [openModal, setOpenModal] = useState<boolean>(false);
 
   console.info('releases', releases);
 
@@ -102,7 +106,7 @@ function ReleasesByLabel() {
 
       // 2️⃣ Tri chronologique
       if (yearOrder) {
-        return yearOrder === 'asc' ? a.year - b.year : b.year - a.year;
+        return yearOrder === 'asc' ? (a.year ?? 0) - (b.year ?? 0) : (b.year ?? 0) - (a.year ?? 0);
       }
 
       // 3️⃣ Pas de tri
@@ -112,7 +116,7 @@ function ReleasesByLabel() {
   /* =======================
      HANDLERS MODAL
   ======================= */
-  const handleOpenInfo = async (release) => {
+  const handleOpenInfo = async (release: Release) => {
     setSelectedReleaseId(release.id);
     setOpenModal(true);
     setLoadingDetail(true);
@@ -137,7 +141,7 @@ function ReleasesByLabel() {
   /* =======================
     BUTTONS HELPER
   ======================= */
-  const getSortIcon = (order) => {
+  const getSortIcon = (order: 'asc' | 'desc' | null) => {
     if (order === 'asc') return <ArrowUpwardIcon fontSize="small" />;
     if (order === 'desc') return <ArrowDownwardIcon fontSize="small" />;
     return null;

@@ -9,13 +9,14 @@ export const findAllArtists = async () => {
     SELECT
       a.id,
       a.name,
+      a.sorted_name,
       i.url AS image_url
     FROM artist a
     LEFT JOIN image i
       ON i.entity_type = 'artist'
      AND i.entity_id = a.id
-    GROUP BY a.id, a.name, i.url
-    ORDER BY a.name
+    GROUP BY a.id, a.name, a.sorted_name,i.url
+    ORDER BY a.sorted_name
   `);
 
   return rows;

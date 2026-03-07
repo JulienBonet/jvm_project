@@ -2,18 +2,23 @@ import { useEffect, useState, useRef, useMemo } from 'react';
 import { TextField } from '@mui/material';
 import InputAdornment from '@mui/material/InputAdornment';
 import IconButton from '@mui/material/IconButton';
+import SearchIcon from '@mui/icons-material/Search';
 import ClearIcon from '@mui/icons-material/Clear';
 import { Link } from 'react-router-dom';
-import ItemCard from '../../components/ItemCard/ItemCard';
+import ItemCard from '../../components/ItemCard/ItemCard.jsx';
 import './artist.css';
+import { Artist } from '../../types/entities/artist.types';
 
 function Artists() {
-  const [artists, setArtists] = useState([]);
-  // states search
-  const [searchTerm, setSearchTerm] = useState('');
-  const searchRef = useRef(null);
-  // states loader
-  const [loadingReleases, setLoadingReleases] = useState(true);
+  // -- GLOBAL STATES -- //
+  const [artists, setArtists] = useState<Artist[]>([]);
+
+  // -- SEARCH STATES -- //
+  const searchRef = useRef<HTMLInputElement | null>(null);
+  const [searchTerm, setSearchTerm] = useState<string>('');
+
+  // -- LOADER STATES -- //
+  const [loadingReleases, setLoadingReleases] = useState<boolean>(true);
 
   console.info('artists', artists);
 
@@ -67,6 +72,7 @@ function Artists() {
           inputRef={searchRef}
           onChange={(e) => setSearchTerm(e.target.value)}
           InputProps={{
+            startAdornment: <SearchIcon sx={{ mr: 1 }} />,
             endAdornment: searchTerm && (
               <InputAdornment position="end">
                 <IconButton

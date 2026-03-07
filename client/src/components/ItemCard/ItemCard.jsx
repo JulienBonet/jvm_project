@@ -27,11 +27,9 @@ function ItemCard({ item, imageBaseUrl }) {
       )}
 
       <CardContent>
-        <Typography variant="body2" fontWeight="bold">
+        <Typography variant="body1" fontWeight="400" align="center">
           {item.name}
         </Typography>
-
-        <Typography variant="caption">{item.id}</Typography>
       </CardContent>
     </Card>
   );

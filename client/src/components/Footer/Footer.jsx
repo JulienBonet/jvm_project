@@ -6,7 +6,7 @@ function Footer() {
       component="footer"
       sx={{
         py: 2,
-        mt: 'auto', // pousse le footer en bas
+        mt: 'auto',
         textAlign: 'center',
         borderTop: '1px solid #ccc',
         backgroundColor: 'background.paper',

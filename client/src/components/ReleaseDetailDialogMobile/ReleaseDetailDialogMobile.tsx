@@ -11,12 +11,12 @@ import {
 } from '@mui/material';
 import CloseIcon from '@mui/icons-material/Close';
 import DiscogsLogo from '../../assets/images/Discogs.png';
-import { ReleaseMobileDetail, Track } from '../../types/entities';
+import { ReleaseMDetail, Track } from '../../types/entities';
 
 interface ReleaseDetailDialogMobileProps {
   open: boolean;
   onClose: () => void;
-  releaseDetail: ReleaseMobileDetail | null;
+  releaseDetail: ReleaseMDetail | null;
   loadingDetail: boolean;
   imageBaseUrl: string;
   discogsLink?: string;

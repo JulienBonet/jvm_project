@@ -16,7 +16,7 @@ import { useFormat } from '../../context/FormatContext.js';
 import ReleaseItemMobile from '../../components/ReleaseItemMobile/ReleaseItemMobile.jsx';
 import GroupHeader from '../../components/GroupHeader/GroupHeader.jsx';
 import ReleaseDetailDialogMobile from '../../components/ReleaseDetailDialogMobile/ReleaseDetailDialogMobile';
-import {ReleaseMobile, ReleaseMobileDetail} from '../../types/entities'
+import {ReleaseMobile, ReleaseMDetail} from '../../types/entities'
 
 
 type GroupByOption = 'title' | 'artist' | 'label';
@@ -33,7 +33,7 @@ function HomeMobile() {
 
   // -- MODAL STATES -- //
   const [selectedReleaseId, setSelectedReleaseId] = useState<number | null>(null);
-  const [releaseDetail, setReleaseDetail] = useState<ReleaseMobileDetail | null>(null);
+  const [releaseDetail, setReleaseDetail] = useState<ReleaseMDetail | null>(null);
   const [loadingDetail, setLoadingDetail] = useState<boolean>(false);
   const [openModal, setOpenModal] = useState<boolean>(false);
 
@@ -182,7 +182,7 @@ function HomeMobile() {
 
     try {
       const res = await fetch(`${backendUrl}/api/release/${release.id}`);
-      const data: ReleaseMobileDetail = await res.json();
+      const data: ReleaseMDetail = await res.json();
       setReleaseDetail(data);
     } catch (err) {
       console.error('Erreur fetch release detail:', err);

@@ -10,8 +10,8 @@ import ArrowUpwardIcon from '@mui/icons-material/ArrowUpward';
 import ArrowDownwardIcon from '@mui/icons-material/ArrowDownward';
 import RestartAltIcon from '@mui/icons-material/RestartAlt';
 import ReleaseCard from '../../components/ReleaseCard/ReleaseCard.jsx';
-import ReleaseDetailDialogDesktop from '../../components/ReleaseDetailDialogDesktop/ReleaseDetailDialogDesktop.jsx';
-import {Release, Genre, Style, ReleaseLink, ReleaseDetail} from '../../types/entities'
+import ReleaseDetailDialogDesktop from '../../components/ReleaseDetailDialogDesktop/ReleaseDetailDialogDesktop';
+import {Release, Genre, Style, ReleaseLink, ReleaseDetail, ReleaseMDetail} from '../../types/entities'
 import './homeDesktop.css';
 
 
@@ -32,7 +32,7 @@ function HomeDesktop() {
 
   // -- MODAL STATES -- //
   const [selectedReleaseId, setSelectedReleaseId] = useState<number | null>(null)
-  const [releaseDetail, setReleaseDetail] = useState<ReleaseDetail | null>(null)
+  const [releaseDetail, setReleaseDetail] = useState<ReleaseMDetail | null>(null)
   const [loadingDetail, setLoadingDetail] = useState<boolean>(false)
   const [openModal, setOpenModal] = useState<boolean>(false)
 

@@ -131,7 +131,7 @@ export interface ReleaseLink {
   url: string
 }
 
-export interface ReleaseMobileDetail {
+export interface ReleaseMDetail {
   id: number;
   title: string;
 

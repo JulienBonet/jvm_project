@@ -1,4 +1,3 @@
-/* eslint-disable react/prop-types */
 // > ENTITY CREATE MODAL : Genre & Style //
 import {
   TextField,
@@ -9,6 +8,16 @@ import {
   DialogActions,
 } from '@mui/material';
 
+interface EntityCreateModalProps {
+  open: boolean;
+  title: string;
+  label: string;
+  newValue: string;
+  setOpenCreate: React.Dispatch<React.SetStateAction<boolean>>;
+  setNewValue: React.Dispatch<React.SetStateAction<string>>;
+  handleCreate: () => void;
+}
+
 function EntityCreateModal02({
   open,
   title,
@@ -17,7 +26,7 @@ function EntityCreateModal02({
   setOpenCreate,
   setNewValue,
   handleCreate,
-}) {
+}: EntityCreateModalProps) {
   return (
     <Dialog open={open} onClose={() => setOpenCreate(false)}>
       <DialogTitle>{title}</DialogTitle>
@@ -35,7 +44,13 @@ function EntityCreateModal02({
       </DialogContent>
 
       <DialogActions>
-        <Button color="var(--color-02)" onClick={() => [setOpenCreate(false), setNewValue('')]}>
+        <Button
+          sx={{ color: 'var(--color-02)' }}
+          onClick={() => {
+            setOpenCreate(false);
+            setNewValue('');
+          }}
+        >
           Annuler
         </Button>
         <Button

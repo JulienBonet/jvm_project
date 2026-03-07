@@ -46,6 +46,8 @@ export interface ReleaseMobile {
   labels?: string;
   artist_sorted_name?: string;
   label_sorted_name?: string;
+  release_type?: string;
+  disc_speed?: number;
   links?: { platform: string; url: string }[];
 }
 

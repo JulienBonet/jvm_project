@@ -13,7 +13,7 @@ import {
 import SearchIcon from '@mui/icons-material/Search';
 import ClearIcon from '@mui/icons-material/Clear';
 import { useFormat } from '../../context/FormatContext.js';
-import ReleaseItemMobile from '../../components/ReleaseItemMobile/ReleaseItemMobile.jsx';
+import ReleaseItemMobile from '../../components/ReleaseItemMobile/ReleaseItemMobile';
 import GroupHeader from '../../components/GroupHeader/GroupHeader.jsx';
 import ReleaseDetailDialogMobile from '../../components/ReleaseDetailDialogMobile/ReleaseDetailDialogMobile';
 import {ReleaseMobile, ReleaseMDetail} from '../../types/entities/release.types'

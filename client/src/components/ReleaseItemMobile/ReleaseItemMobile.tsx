@@ -1,8 +1,13 @@
-/* eslint-disable react/prop-types */
 import './releaseItemMobile.css';
 import InfoOutlinedIcon from '@mui/icons-material/InfoOutlined';
+import {ReleaseMobile} from '../../types/entities/release.types'
 
-function ReleaseItemMobile({ release, onInfoClick }) {
+interface ReleaseItemMobileProps {
+  release: ReleaseMobile;
+  onInfoClick: (release: ReleaseMobile) => void;
+}
+
+function ReleaseItemMobile({ release, onInfoClick }: ReleaseItemMobileProps) {
   return (
     <div className="releaseItemMobile">
       <div className="releaseItemMobileInfoArea">
@@ -26,7 +31,7 @@ function ReleaseItemMobile({ release, onInfoClick }) {
         <div className="releaseItemMobileInfoBtnArea">
           <InfoOutlinedIcon
             className="releaseItemM_infoIcon"
-            onClick={() => onInfoClick?.(release)}
+            onClick={() => onInfoClick(release)}
           />
         </div>
       </div>

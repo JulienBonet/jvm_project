@@ -9,32 +9,63 @@ import CalendarMonthIcon from '@mui/icons-material/CalendarMonth';
 import ArrowUpwardIcon from '@mui/icons-material/ArrowUpward';
 import ArrowDownwardIcon from '@mui/icons-material/ArrowDownward';
 import RestartAltIcon from '@mui/icons-material/RestartAlt';
-import ReleaseCard from '../../components/ReleaseCard/ReleaseCard';
-import ReleaseDetailDialogDesktop from '../../components/ReleaseDetailDialogDesktop/ReleaseDetailDialogDesktop';
+import ReleaseCard from '../../components/ReleaseCard/ReleaseCard.jsx';
+import ReleaseDetailDialogDesktop from '../../components/ReleaseDetailDialogDesktop/ReleaseDetailDialogDesktop.jsx';
 import './homeDesktop.css';
 
+export interface Release {
+  id: number
+  title: string
+  year: number
+  disc_size: string
+  genres?: string
+  styles?: string
+}
+
+export interface Genre {
+  id: number
+  name: string
+}
+
+export interface Style {
+  id: number
+  name: string
+}
+
+export interface ReleaseLink {
+  platform: string
+  url: string
+}
+
+export interface ReleaseDetail extends Release {
+  links?: ReleaseLink[]
+}
+
 function HomeDesktop() {
-  const searchRef = useRef(null);
-  const [releases, setReleases] = useState([]);
-  const [genres, setGenres] = useState([]);
-  const [styles, setStyles] = useState([]);
-  // states filters
-  const [searchTerm, setSearchTerm] = useState('');
-  const [selectedGenre, setSelectedGenre] = useState('');
-  const [selectedStyle, setSelectedStyle] = useState('');
-  const [discFilter, setDiscFilter] = useState('ALL');
-  const [alphaOrder, setAlphaOrder] = useState(null);
-  const [yearOrder, setYearOrder] = useState(null);
-  // states modal
-  const [selectedReleaseId, setSelectedReleaseId] = useState(null);
-  const [releaseDetail, setReleaseDetail] = useState(null);
-  const [loadingDetail, setLoadingDetail] = useState(false);
-  const [openModal, setOpenModal] = useState(false);
-  // states loader
-  const [loadingReleases, setLoadingReleases] = useState(true);
+  // -- GLOBAL STATES -- //
+  const searchRef = useRef<HTMLInputElement | null>(null)
+  const [releases, setReleases] = useState<Release[]>([])
+  const [genres, setGenres] = useState<Genre[]>([])
+  const [styles, setStyles] = useState<Style[]>([])
+
+  // -- FILTER STATES -- //
+    const [searchTerm, setSearchTerm] = useState<string>('')
+  const [selectedGenre, setSelectedGenre] = useState<string>('')
+  const [selectedStyle, setSelectedStyle] = useState<string>('')
+  const [discFilter, setDiscFilter] = useState<'ALL' | '33T' | '45T'>('ALL')
+  const [alphaOrder, setAlphaOrder] = useState<'asc' | 'desc' | null>(null)
+  const [yearOrder, setYearOrder] = useState<'asc' | 'desc' | null>(null)
+
+  // -- MODAL STATES -- //
+  const [selectedReleaseId, setSelectedReleaseId] = useState<number | null>(null)
+  const [releaseDetail, setReleaseDetail] = useState<ReleaseDetail | null>(null)
+  const [loadingDetail, setLoadingDetail] = useState<boolean>(false)
+  const [openModal, setOpenModal] = useState<boolean>(false)
+
+  // -- LADER STATES -- //
+  const [loadingReleases, setLoadingReleases] = useState<boolean>(true)
 
   console.info('releases', releases);
-  console.info('styles', styles);
 
   const backendUrl = `${import.meta.env.VITE_BACKEND_URL}`;
   const cloudinaryUrl = `${import.meta.env.VITE_CLOUDINARY_BASE_URL}`;
@@ -158,7 +189,7 @@ function HomeDesktop() {
   /* =======================
      HANDLERS MODAL
   ======================= */
-  const handleOpenInfo = async (release) => {
+  const handleOpenInfo = async (release : Release) => {
     setSelectedReleaseId(release.id);
     setOpenModal(true);
     setLoadingDetail(true);
@@ -183,7 +214,7 @@ function HomeDesktop() {
   /* =======================
     BUTTONS HELPER
   ======================= */
-  const getSortIcon = (order) => {
+  const getSortIcon = (order: 'asc' | 'desc' | null) => {
     if (order === 'asc') return <ArrowUpwardIcon fontSize="small" />;
     if (order === 'desc') return <ArrowDownwardIcon fontSize="small" />;
     return null;

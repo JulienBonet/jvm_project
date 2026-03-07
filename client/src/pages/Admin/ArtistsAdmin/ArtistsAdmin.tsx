@@ -17,25 +17,8 @@ import EntityDetailModal from '../../../components/Admin/EntityDetailModal.jsx';
 import DeleteConfirmDialog from '../../../components/Admin/DeleteConfirmDialog.jsx';
 import AdminSnackbar from '../../../components/Admin/AdminSnackbar.jsx';
 import useCrudEntity from '../../../hooks/useCrudEntity';
-import { BaseEntity, BaseEntityForm } from '../../../types/entities';
+import { Artist, ArtistForm } from '../../../types/entities';
 import '../adminPage.css';
-
-interface Artist extends BaseEntity {
-  id: number;
-  name: string;
-  sorted_name: string;
-  image_url: string;
-  release_count: number;
-  discogs_id?: number;
-  discogs_image_url?: string;
-}
-
-interface ArtistForm extends BaseEntityForm {
-  name: string;
-  sorted_name: string;
-  image_url?: string;
-  discogs_id?: number;
-}
 
 function ArtistAdmin() {
   const backendUrl = import.meta.env.VITE_BACKEND_URL;

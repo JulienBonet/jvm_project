@@ -17,25 +17,8 @@ import EntityDetailModal from '../../../components/Admin/EntityDetailModal';
 import DeleteConfirmDialog from '../../../components/Admin/DeleteConfirmDialog';
 import AdminSnackbar from '../../../components/Admin/AdminSnackbar';
 import useCrudEntity from '../../../hooks/useCrudEntity';
-import { BaseEntity, BaseEntityForm } from '../../../types/entities';
+import { Label, LabelForm } from '../../../types/entities';
 import '../adminPage.css';
-
-interface Label extends BaseEntity {
-  id: number;
-  name: string;
-  sorted_name: string;
-  image_url: string;
-  release_count: number;
-  discogs_id?: number;
-  discogs_image_url?: string;
-}
-
-interface LabelForm extends BaseEntityForm {
-  name: string;
-  sorted_name: string;
-  image_url?: string;
-  discogs_id?: number;
-}
 
 function LabelsAdmin() {
   const backendUrl = import.meta.env.VITE_BACKEND_URL;

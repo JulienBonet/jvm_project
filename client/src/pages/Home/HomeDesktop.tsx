@@ -11,35 +11,9 @@ import ArrowDownwardIcon from '@mui/icons-material/ArrowDownward';
 import RestartAltIcon from '@mui/icons-material/RestartAlt';
 import ReleaseCard from '../../components/ReleaseCard/ReleaseCard.jsx';
 import ReleaseDetailDialogDesktop from '../../components/ReleaseDetailDialogDesktop/ReleaseDetailDialogDesktop.jsx';
+import {Release, Genre, Style, ReleaseLink, ReleaseDetail} from '../../types/entities'
 import './homeDesktop.css';
 
-interface Release {
-  id: number
-  title: string
-  year: number
-  disc_size: string
-  genres?: string
-  styles?: string
-}
-
-interface Genre {
-  id: number
-  name: string
-}
-
-interface Style {
-  id: number
-  name: string
-}
-
-interface ReleaseLink {
-  platform: string
-  url: string
-}
-
-interface ReleaseDetail extends Release {
-  links?: ReleaseLink[]
-}
 
 function HomeDesktop() {
   // -- GLOBAL STATES -- //

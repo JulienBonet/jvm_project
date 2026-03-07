@@ -17,12 +17,9 @@ import ReleaseItemMobile from '../../components/ReleaseItemMobile/ReleaseItemMob
 import GroupHeader from '../../components/GroupHeader/GroupHeader.jsx';
 import ReleaseDetailDialogMobile from '../../components/ReleaseDetailDialogMobile/ReleaseDetailDialogMobile.jsx';
 
-// =======================
-// TYPES
-// =======================
-export interface Release {
+interface ReleaseMobile {
   id: number;
-  title?: string;
+  title: string;
   artists?: string;
   labels?: string;
   artist_sorted_name?: string;
@@ -32,19 +29,19 @@ export interface Release {
 
 type GroupByOption = 'title' | 'artist' | 'label';
 
-// =======================
-// COMPONENT
-// =======================
 function HomeMobile() {
+  // -- GLOBAL STATES -- //
   const { selectedFormat, getSize } = useFormat();
+  const [releases, setReleases] = useState<ReleaseMobile[]>([]);
 
-  const [releases, setReleases] = useState<Release[]>([]);
+  // -- FILTER STATES -- //
   const [groupBy, setGroupBy] = useState<GroupByOption>('title');
   const [search, setSearch] = useState<string>('');
   const [openGroup, setOpenGroup] = useState<Record<string, boolean>>({});
 
+  // -- MODAL STATES -- //
   const [selectedReleaseId, setSelectedReleaseId] = useState<number | null>(null);
-  const [releaseDetail, setReleaseDetail] = useState<Release | null>(null);
+  const [releaseDetail, setReleaseDetail] = useState<ReleaseMobile | null>(null);
   const [loadingDetail, setLoadingDetail] = useState<boolean>(false);
   const [openModal, setOpenModal] = useState<boolean>(false);
 
@@ -57,7 +54,7 @@ function HomeMobile() {
   useEffect(() => {
     fetch(`${backendUrl}/api/mobile?size=${getSize()}`)
       .then(res => res.json())
-      .then((data: Release[]) => {
+      .then((data: ReleaseMobile[]) => {
         setReleases(data);
         setOpenGroup({});
       })
@@ -87,14 +84,14 @@ function HomeMobile() {
     return match ? match[0] : '#';
   };
 
-  const getGroupValue = (release: Release): string => {
+  const getGroupValue = (release: ReleaseMobile): string => {
     if (groupBy === 'title') return release.title ?? '';
     if (groupBy === 'artist') return release.artists ?? '';
     if (groupBy === 'label') return release.labels ?? '';
     return '';
   };
 
-  const getGroupLetter = (release: Release): string => {
+  const getGroupLetter = (release: ReleaseMobile): string => {
     if (groupBy === 'title') return getTitleSortKey(release.title);
     if (groupBy === 'artist') return release.artist_sorted_name?.[0]?.toUpperCase() ?? '#';
     if (groupBy === 'label') return release.label_sorted_name?.[0]?.toUpperCase() ?? '#';
@@ -113,10 +110,10 @@ function HomeMobile() {
   // GROUPING + SORT
   // =======================
 
-  const groupedReleases = useMemo<Record<string, Release[]> | null>(() => {
+  const groupedReleases = useMemo<Record<string, ReleaseMobile[]> | null>(() => {
   if (search) return null;
 
-  const groups: Record<string, Release[]> = {};
+  const groups: Record<string, ReleaseMobile[]> = {};
 
   filteredReleases.forEach(release => {
     const letter = getGroupLetter(release);
@@ -160,14 +157,14 @@ function HomeMobile() {
   // =======================
   // MODAL HANDLERS
   // =======================
-  const handleOpenInfo = async (release: Release) => {
+  const handleOpenInfo = async (release: ReleaseMobile) => {
     setSelectedReleaseId(release.id);
     setOpenModal(true);
     setLoadingDetail(true);
 
     try {
       const res = await fetch(`${backendUrl}/api/release/${release.id}`);
-      const data: Release = await res.json();
+      const data: ReleaseMobile = await res.json();
       setReleaseDetail(data);
     } catch (err) {
       console.error('Erreur fetch release detail:', err);

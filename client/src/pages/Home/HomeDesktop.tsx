@@ -13,7 +13,7 @@ import ReleaseCard from '../../components/ReleaseCard/ReleaseCard.jsx';
 import ReleaseDetailDialogDesktop from '../../components/ReleaseDetailDialogDesktop/ReleaseDetailDialogDesktop.jsx';
 import './homeDesktop.css';
 
-export interface Release {
+interface Release {
   id: number
   title: string
   year: number
@@ -22,22 +22,22 @@ export interface Release {
   styles?: string
 }
 
-export interface Genre {
+interface Genre {
   id: number
   name: string
 }
 
-export interface Style {
+interface Style {
   id: number
   name: string
 }
 
-export interface ReleaseLink {
+interface ReleaseLink {
   platform: string
   url: string
 }
 
-export interface ReleaseDetail extends Release {
+interface ReleaseDetail extends Release {
   links?: ReleaseLink[]
 }
 
@@ -49,7 +49,7 @@ function HomeDesktop() {
   const [styles, setStyles] = useState<Style[]>([])
 
   // -- FILTER STATES -- //
-    const [searchTerm, setSearchTerm] = useState<string>('')
+  const [searchTerm, setSearchTerm] = useState<string>('')
   const [selectedGenre, setSelectedGenre] = useState<string>('')
   const [selectedStyle, setSelectedStyle] = useState<string>('')
   const [discFilter, setDiscFilter] = useState<'ALL' | '33T' | '45T'>('ALL')
@@ -62,7 +62,7 @@ function HomeDesktop() {
   const [loadingDetail, setLoadingDetail] = useState<boolean>(false)
   const [openModal, setOpenModal] = useState<boolean>(false)
 
-  // -- LADER STATES -- //
+  // -- LOADER STATES -- //
   const [loadingReleases, setLoadingReleases] = useState<boolean>(true)
 
   console.info('releases', releases);

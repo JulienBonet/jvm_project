@@ -174,7 +174,9 @@ function StylesAdmin() {
       const res = await fetch(`${backendUrl}/api/style/${id}`, { method: 'DELETE' });
       const data = await res.json();
 
-      if (!res.ok) throw new Error(data.message || 'Erreur suppression');
+       if (!res.ok) {
+      throw new Error(data.error || data.message || 'Erreur suppression');
+    }
 
       showSnackbar(`Style supprimé !`, 'success');
       fetchStyles();

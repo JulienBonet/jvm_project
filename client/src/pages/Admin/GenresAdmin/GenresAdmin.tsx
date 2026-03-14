@@ -181,7 +181,9 @@ function GenresAdmin() {
       const res = await fetch(`${backendUrl}/api/genre/${id}`, { method: 'DELETE' });
       const data = await res.json();
 
-      if (!res.ok) throw new Error(data.message || 'Erreur suppression');
+      if (!res.ok) {
+      throw new Error(data.error || data.message || 'Erreur suppression');
+    }
 
       showSnackbar(`Genre supprimé !`, 'success');
       fetchGenres();

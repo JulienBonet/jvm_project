@@ -83,14 +83,28 @@ export const editStyleById = async (id, name) => {
 /* =========================
    DELETE
 ========================= */
-// export const eraseStyleById = async (id) => {
-//   const [result] = await db.query('DELETE FROM style WHERE id = ?', [id]);
-//   return result.affectedRows;
-// };
-
 export const eraseStyleById = async (id, connection = null) => {
   const query = connection ? connection.query.bind(connection) : db.query.bind(db);
 
+  // Vérifier si le style est utilisé par une release
+  const [blockingReleases] = await query(
+    `SELECT r.title, r.year
+     FROM releases r
+     JOIN release_style rs ON rs.release_id = r.id
+     WHERE rs.style_id = ?`,
+    [id],
+  );
+
+  if (blockingReleases.length > 0) {
+    // construire un message lisible
+    const titles = blockingReleases.map((r) => `${r.title} (${r.year})`).join(', ');
+    const message = `Impossible de supprimer : genre utilisé par ces releases : ${titles}`;
+    const error = new Error(message);
+    error.code = 'ENTITY_IN_USE';
+    throw error;
+  }
+
+  // Effacer le Style
   const [result] = await query('DELETE FROM style WHERE id = ?', [id]);
   return result.affectedRows;
 };

@@ -130,14 +130,12 @@ export const deleteStyle = async (req, res) => {
 
     res.json({ message: 'Style supprimé' });
   } catch (error) {
-    console.error('DELETE STYLE ERROR:', error);
+    console.error(error);
 
-    if (error.code === 'ER_ROW_IS_REFERENCED_2') {
-      return res.status(409).json({
-        message: 'Impossible de supprimer : Style utilisé dans une release',
-      });
+    if (error.code === 'ENTITY_IN_USE') {
+      res.status(409).json({ error: error.message });
+    } else {
+      res.status(500).json({ error: 'Erreur suppression' });
     }
-
-    res.status(500).json({ message: 'Erreur serveur' });
   }
 };

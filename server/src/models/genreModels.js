@@ -82,14 +82,29 @@ export const editGenreById = async (id, name) => {
 /* =========================
    DELETE
 ========================= */
-// export const eraseGenreById = async (id) => {
-//   const [result] = await db.query('DELETE FROM genre WHERE id = ?', [id]);
-//   return result.affectedRows;
-// };
 
 export const eraseGenreById = async (id, connection = null) => {
   const query = connection ? connection.query.bind(connection) : db.query.bind(db);
 
+  // Vérifier si le genre est utilisé par une release
+  const [blockingReleases] = await query(
+    `SELECT r.title, r.year
+     FROM releases r
+     JOIN release_genre rg ON rg.release_id = r.id
+     WHERE rg.genre_id = ?`,
+    [id],
+  );
+
+  if (blockingReleases.length > 0) {
+    // construire un message lisible
+    const titles = blockingReleases.map((r) => `${r.title} (${r.year})`).join(', ');
+    const message = `Impossible de supprimer : genre utilisé par ces releases : ${titles}`;
+    const error = new Error(message);
+    error.code = 'ENTITY_IN_USE';
+    throw error;
+  }
+
+  // Effacer le Genre
   const [result] = await query('DELETE FROM genre WHERE id = ?', [id]);
   return result.affectedRows;
 };

@@ -7,3 +7,9 @@ export type Track = {
   size?: string
   speed?: string
 }
+
+export interface createTrack {
+  position: string;
+  title: string;
+  duration: string;
+}

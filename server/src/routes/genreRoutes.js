@@ -5,6 +5,7 @@ const router = Router();
 
 router.get('/', genreControllers.getAllGenres);
 router.get('/orderbyid', genreControllers.getAllGenresOrderById);
+router.get('/search', genreControllers.getAllGenresBySearch);
 router.post('/', genreControllers.createGenre);
 router.get('/:id', genreControllers.getGenreById);
 router.put('/:id', genreControllers.updateGenre);

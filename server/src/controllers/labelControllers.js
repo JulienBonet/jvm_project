@@ -36,6 +36,20 @@ export const getAllLabelsAdmin = async (req, res) => {
     res.status(500).json({ error: 'Erreur serveur' });
   }
 };
+
+export const getAllLabelsBySearch = async (req, res) => {
+  try {
+    const { search } = req.query;
+
+    const artists = await labelModels.findAllLabelsBySearch({ search });
+
+    res.json(artists);
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: 'Error fetching labels' });
+  }
+};
+
 /* =========================
    CREATE
 ========================= */

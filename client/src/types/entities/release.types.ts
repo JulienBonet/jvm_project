@@ -74,3 +74,84 @@ export interface ReleaseMDetail {
 
   links?: ReleaseLink[]
 }
+
+// create realease
+
+export interface ReleaseState {
+  title: string;
+  year: string;
+  country: string;
+  barcode: string;
+  release_type: string;
+  notes: string;
+  discogs_image_url?: string;
+}
+
+export interface DiscState {
+  format: string;
+  size: string;
+  speed: string;
+}
+
+export interface Entity {
+  name: string;
+  discogs_id?: number;
+  isNew?: boolean;
+}
+
+export interface DiscogsIdentifier {
+  type: string;
+  value: string;
+}
+
+export interface DiscogsArtist {
+  name: string;
+  id: number;
+}
+
+export interface DiscogsLabel {
+  name: string;
+  id: number;
+}
+
+export interface DiscogsFormat {
+  name: string;
+  descriptions?: string[];
+}
+
+export interface DiscogsTrack {
+  position: string;
+  title: string;
+  duration: string;
+}
+
+export interface DiscogsVideo {
+  uri: string;
+}
+
+export interface DiscogsImage {
+  uri: string;
+}
+
+export interface DiscogsRelease {
+  title?: string;
+  year?: number;
+  country?: string;
+  notes?: string;
+
+  identifiers?: DiscogsIdentifier[];
+  formats?: DiscogsFormat[];
+
+  artists?: DiscogsArtist[];
+  labels?: DiscogsLabel[];
+
+  genres?: string[];
+  styles?: string[];
+
+  tracklist?: DiscogsTrack[];
+
+  videos?: DiscogsVideo[];
+  images?: DiscogsImage[];
+
+  uri?: string;
+}

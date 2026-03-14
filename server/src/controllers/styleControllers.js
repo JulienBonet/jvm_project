@@ -36,6 +36,19 @@ export const getStyleById = async (req, res, next) => {
   }
 };
 
+export const getAllStylesBySearch = async (req, res) => {
+  try {
+    const { search } = req.query;
+
+    const artists = await styleModels.findAllStylesBySearch({ search });
+
+    res.json(artists);
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: 'Error fetching styles' });
+  }
+};
+
 /* =========================
    CREATE
 ========================= */

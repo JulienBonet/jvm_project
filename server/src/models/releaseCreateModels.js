@@ -1,11 +1,22 @@
+import { getOrCreateArtist } from '../utils/getOrCreateArtist.js';
+import { getOrCreateLabel } from '../utils/getOrCreateLabel.js';
+import { parseTrackPosition } from '../utils/parseTrackPosition.js';
+
 export const addRelease = async (payload, connection) => {
   const conn = connection;
 
   try {
-    await conn.beginTransaction();
-
-    const { release, image_filename, thumbnail_url, artists, labels, genres, styles, links } =
-      payload;
+    const {
+      release,
+      image_filename,
+      thumbnail_url,
+      artists,
+      labels,
+      genres,
+      styles,
+      links,
+      tracks,
+    } = payload;
 
     // -----------------
     // Insert release
@@ -47,33 +58,24 @@ export const addRelease = async (payload, connection) => {
     // artist
     // -----------------
 
+    const insertedArtists = new Set();
+
     for (const artist of artists || []) {
-      let artistId = artist.id;
+      const artistId = await getOrCreateArtist(conn, artist);
 
-      if (!artistId) {
-        const [existing] = await conn.query(`SELECT id FROM artist WHERE name = ?`, [artist.name]);
+      const role = artist.role || 'Main';
+      const key = `${artistId}-${role}`;
 
-        if (existing.length) {
-          artistId = existing[0].id;
-        } else {
-          const [created] = await conn.query(
-            `
-        INSERT INTO artist (discogs_id, name, sorted_name)
-        VALUES (?, ?, ?)
-      `,
-            [artist.discogs_id || null, artist.name, artist.sorted_name || artist.name],
-          );
+      if (insertedArtists.has(key)) continue;
 
-          artistId = created.insertId;
-        }
-      }
+      insertedArtists.add(key);
 
       await conn.query(
         `
     INSERT INTO release_artist (release_id, artist_id, role)
     VALUES (?, ?, ?)
-  `,
-        [releaseId, artistId, artist.role || 'Main'],
+    `,
+        [releaseId, artistId, role],
       );
     }
 
@@ -82,31 +84,13 @@ export const addRelease = async (payload, connection) => {
     // -----------------
 
     for (const label of labels || []) {
-      let labelId = label.id;
-
-      if (!labelId) {
-        const [existing] = await conn.query(`SELECT id FROM label WHERE name = ?`, [label.name]);
-
-        if (existing.length) {
-          labelId = existing[0].id;
-        } else {
-          const [created] = await conn.query(
-            `
-        INSERT INTO label (discogs_id, name, sorted_name)
-        VALUES (?, ?, ?)
-      `,
-            [label.discogs_id || null, label.name, label.sorted_name || label.name],
-          );
-
-          labelId = created.insertId;
-        }
-      }
+      const labelId = await getOrCreateLabel(conn, label);
 
       await conn.query(
         `
     INSERT INTO release_label (release_id, label_id, catalog_number)
     VALUES (?, ?, ?)
-  `,
+    `,
         [releaseId, labelId, label.catalog_number || null],
       );
     }
@@ -167,6 +151,8 @@ export const addRelease = async (payload, connection) => {
     // link
     // -----------------
     for (const link of links || []) {
+      if (!link.platform || !link.url) continue;
+
       await conn.query(
         `
     INSERT INTO external_link
@@ -175,6 +161,76 @@ export const addRelease = async (payload, connection) => {
   `,
         [releaseId, link.platform, link.url],
       );
+    }
+
+    // -----------------
+    // tracks
+    // -----------------
+
+    if (tracks && tracks.length > 0) {
+      const discCache = {};
+      const sideCache = {};
+
+      for (const track of tracks) {
+        if (track.type_ && track.type_ !== 'track') continue;
+
+        const parsed = parseTrackPosition(track.position);
+
+        if (!parsed) continue;
+
+        const { disc, side } = parsed;
+
+        if (!side) continue;
+
+        // ---------- DISC ----------
+        let discId = discCache[disc];
+
+        if (!discId) {
+          const [discResult] = await conn.query(
+            `
+          INSERT INTO disc
+          (release_id, disc_number, format, size, speed)
+          VALUES (?, ?, ?, ?, ?)
+            `,
+            [
+              releaseId,
+              disc,
+              payload.disc.format || null,
+              payload.disc.size || null,
+              payload.disc.speed ? parseInt(payload.disc.speed) : null,
+            ],
+          );
+
+          discId = discResult.insertId;
+          discCache[disc] = discId;
+        }
+
+        // ---------- SIDE ----------
+        const sideKey = `${discId}-${side}`;
+        let sideId = sideCache[sideKey];
+
+        if (!sideId) {
+          const [sideResult] = await conn.query(
+            `
+        INSERT INTO side (disc_id, name)
+        VALUES (?, ?)
+        `,
+            [discId, side],
+          );
+
+          sideId = sideResult.insertId;
+          sideCache[sideKey] = sideId;
+        }
+
+        // ---------- TRACK ----------
+        await conn.query(
+          `
+      INSERT INTO track (side_id, position, title, duration)
+      VALUES (?, ?, ?, ?)
+      `,
+          [sideId, track.position || null, track.title || null, track.duration || null],
+        );
+      }
     }
 
     // -----------------

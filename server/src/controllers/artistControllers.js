@@ -50,6 +50,19 @@ export const getAllArtistsAdmin = async (req, res) => {
   }
 };
 
+export const getAllArtistsBySearch = async (req, res) => {
+  try {
+    const { search } = req.query;
+
+    const artists = await artistModels.findAllArtistsBySearch({ search });
+
+    res.json(artists);
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: 'Error fetching artists' });
+  }
+};
+
 /* =========================
    CREATE
 ========================= */

@@ -5,6 +5,7 @@ const router = Router();
 
 router.get('/', styleControllers.getAllStyles);
 router.get('/orderbyid', styleControllers.getAllStylesOrderById);
+router.get('/search', styleControllers.getAllStylesBySearch);
 router.post('/', styleControllers.createStyle);
 router.get('/:id', styleControllers.getStyleById);
 router.put('/:id', styleControllers.updateStyle);

@@ -11,6 +11,7 @@ import {
 } from '@mui/material';
 import CloseIcon from '@mui/icons-material/Close';
 import DiscogsLogo from '../../assets/images/Discogs.png';
+import YoutubeLogo from '../../assets/images/youtube.png';
 import './releaseDetailDialogDesktop.css';
 import { ReleaseMDetail } from '../../types/entities/release.types';
 import { Track } from '../../types/entities/track.types';
@@ -22,6 +23,7 @@ interface ReleaseDetailDialogDesktopProps {
   loadingDetail: boolean;
   imageBaseUrl: string;
   discogsLink?: string;
+  youtubeLink?: string;
   tracks?: Track[];
 }
 
@@ -32,6 +34,7 @@ function ReleaseDetailDialogDesktop({
   loadingDetail,
   imageBaseUrl,
   discogsLink,
+  youtubeLink,
 }: ReleaseDetailDialogDesktopProps) {
   if (!releaseDetail) return null;
   const firstTrack = releaseDetail.tracks?.[0];
@@ -185,18 +188,39 @@ function ReleaseDetailDialogDesktop({
                 </>
               )}
 
-              {discogsLink && (
+              {(discogsLink || youtubeLink) && (
                 <>
                   <Divider sx={{ my: 2 }} />
-                  <Box sx={{ display: 'flex', justifyContent: 'center' }}>
-                    <IconButton
-                      component="a"
-                      href={discogsLink}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                    >
-                      <img src={DiscogsLogo} alt="Discogs" style={{ height: 40 }} />
-                    </IconButton>
+
+                  <Box
+                    sx={{
+                      display: 'flex',
+                      justifyContent: 'center',
+                      alignItems: 'center',
+                      gap: 2,
+                    }}
+                  >
+                    {discogsLink && (
+                      <IconButton
+                        component="a"
+                        href={discogsLink}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                      >
+                        <img src={DiscogsLogo} alt="Discogs" style={{ height: 40 }} />
+                      </IconButton>
+                    )}
+
+                    {youtubeLink && (
+                      <IconButton
+                        component="a"
+                        href={youtubeLink}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                      >
+                        <img src={YoutubeLogo} alt="YouTube" style={{ height: 40 }} />
+                      </IconButton>
+                    )}
                   </Box>
                 </>
               )}

@@ -1,0 +1,16 @@
+.createRelease_main {
+  margin: 1.5rem 2rem 2rem 2rem;
+}
+
+.createReleaseTopSection {
+  display: flex;
+  height: 50px;
+  padding-bottom: 1.5rem;
+  border-bottom: 1px solid black;
+}
+
+.Title-createReleaseTopSection {
+  display: flex;
+  align-items: center;
+  width: 40%;
+}

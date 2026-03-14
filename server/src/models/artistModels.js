@@ -135,6 +135,26 @@ export const findAllArtistsForAdmin = async () => {
   return rows;
 };
 
+export const findAllArtistsBySearch = async ({ search }) => {
+  let query = `
+    SELECT id, name
+    FROM artist
+  `;
+
+  const params = [];
+
+  if (search) {
+    query += ` WHERE name LIKE ? `;
+    params.push(`%${search}%`);
+  }
+
+  query += ` ORDER BY name LIMIT 20`;
+
+  const [rows] = await db.query(query, params);
+
+  return rows;
+};
+
 /* ===============================
    CREATE
 ================================= */

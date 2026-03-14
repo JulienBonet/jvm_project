@@ -12,7 +12,7 @@ import CloseIcon from '@mui/icons-material/Close';
 import SearchIcon from '@mui/icons-material/Search';
 import EntityTable from '../../../components/Admin/EntityTable';
 import ReleaseDetailDialogDesktop from '../../../components/ReleaseDetailDialogDesktop/ReleaseDetailDialogDesktop';
-import EntityCreateModal from '../../../components/Admin/EntityCreateModal.jsx';
+import CreateRelease from '../../../components/Admin/CreateRelease';
 import EntityDetailModal from '../../../components/Admin/EntityDetailModal.jsx';
 import DeleteConfirmDialog from '../../../components/Admin/DeleteConfirmDialog.jsx';
 import AdminSnackbar from '../../../components/Admin/AdminSnackbar';
@@ -23,20 +23,6 @@ function ReleasesAdmin() {
   const backendUrl = import.meta.env.VITE_BACKEND_URL;
   const cloudinaryUrl = import.meta.env.VITE_CLOUDINARY_BASE_URL;
 
-  // --  CRUD via hook --//
-  //   const {
-  //     data: artists,
-  //     loading,
-  //     error,
-  //     fetchAll,
-  //     create,
-  //     update,
-  //     remove,
-  //   } = useCrudEntity<Artist>({
-  //     listEndpoint: '/api/artist/admin',
-  //     baseEndpoint: '/api/artist',
-  //   });
-
   // -- GLOBAL STATES -- //
   const [releases, setReleases] = useState<Release[]>([]);
   const [selectedRelease, setSelectedRelease] = useState<ReleaseMDetail | null>(null);
@@ -45,16 +31,7 @@ function ReleasesAdmin() {
   const [searchTerm, setSearchTerm] = useState('');
 
   // -- CREATE STATES -- //
-  const [openCreate, setOpenCreate] = useState(false);
-  const [newRelease, setNewRelease] = useState({
-    name: '',
-    sorted_name: '',
-    image_url: '',
-    discogs_id: undefined,
-  });
-  const [previewNewImage, setPreviewNewImage] = useState<string | null>(null);
-  const [newImageFile, setNewImageFile] = useState<File | null>(null);
-  const [uploadingNew, setUploadingNew] = useState(false);
+  const [openCreate, setOpenCreate] = useState<boolean>(false);
 
   // --  UPDATE / EDIT STATES --/
   const [originalRelease, setOriginalRelease] = useState(null);
@@ -122,163 +99,39 @@ function ReleasesAdmin() {
     fetchReleases();
   }, []);
 
-  const fetchSelectedRelease = async (id : number) => {
-  try {
-    setLoadingDetail(true)
+  const fetchSelectedRelease = async (id: number) => {
+    try {
+      setLoadingDetail(true);
 
-    const res = await fetch(`${backendUrl}/api/release/${id}`)
+      const res = await fetch(`${backendUrl}/api/release/${id}`);
 
-    if (!res.ok) throw new Error("Erreur serveur")
+      if (!res.ok) throw new Error('Erreur serveur');
 
-    const data = await res.json()
+      const data = await res.json();
 
-    setSelectedRelease(data)
-    setOpenDetail(true)
-
-  } catch (err) {
-    console.error(err)
-    showSnackbar("Erreur chargement release", "error")
-  } finally {
-    setLoadingDetail(false)
-  }
-}
-
-  // ---------------------------
-  //  FETCH FROM DISCOGS
-  // ---------------------------
-  //   const handleFetchFromDiscogs = async () => {
-  //     if (!newArtist.discogs_id) return;
-
-  //     try {
-  //       setFetchingDiscogs(true);
-  //       const res = await fetch(`${backendUrl}/api/artist/discogs-preview/${newArtist.discogs_id}`);
-  //       if (!res.ok) throw new Error('Erreur Discogs');
-
-  //       const data = await res.json();
-
-  //       setNewArtist((prev) => ({
-  //         ...prev,
-  //         name: data.name || '',
-  //         sorted_name: data.sorted_name || '',
-  //         image_url: data.image_url || '',
-  //       }));
-
-  //       if (data.image_url) setPreviewNewImage(data.image_url);
-  //     } catch (err) {
-  //       console.error(err);
-  //       showSnackbar('Erreur récupération Discogs', 'error');
-  //     } finally {
-  //       setFetchingDiscogs(false);
-  //     }
-  //   };
-
-  //   const handleFetchDiscogsForEdit = async () => {
-  //     if (!editedArtist?.discogs_id) return;
-
-  //     try {
-  //       setFetchingDiscogs(true);
-
-  //       const res = await fetch(
-  //         `${backendUrl}/api/artist/discogs-preview/${editedArtist.discogs_id}`,
-  //       );
-  //       if (!res.ok) throw new Error('Erreur Discogs');
-
-  //       const discogsData = await res.json();
-
-  //       setEditedArtist((prev) =>
-  //         prev
-  //           ? {
-  //               ...prev,
-  //               name: discogsData.name ?? prev.name,
-  //               sorted_name: discogsData.sorted_name ?? prev.sorted_name,
-  //               discogs_image_url: discogsData.image_url ?? prev.discogs_image_url,
-  //             }
-  //           : prev,
-  //       );
-
-  //       if (discogsData.image_url) {
-  //         setPreviewEditImage(discogsData.image_url);
-  //         setNewImageFile(null); // important
-  //       }
-  //     } catch (err) {
-  //       console.error(err);
-  //       showSnackbar('Erreur récupération Discogs', 'error');
-  //     } finally {
-  //       setFetchingDiscogs(false);
-  //     }
-  //   };
+      setSelectedRelease(data);
+      setOpenDetail(true);
+    } catch (err) {
+      console.error(err);
+      showSnackbar('Erreur chargement release', 'error');
+    } finally {
+      setLoadingDetail(false);
+    }
+  };
 
   // ---------------------------
-  //  CREATE RELEASE
+  //  CREATE
   // ---------------------------
-  //   const handleCreate = async () => {
-  //     try {
-  //      
-  //     } catch (err) {
-  //       if (err instanceof Error) {
-  //         showSnackbar(err.message, 'error');
-  //       } else {
-  //         showSnackbar('Erreur inconnue', 'error');
-  //       }
-  //     } finally {
-  //       setUploadingNew(false);
-  //     }
-  //   };
+  const handleCloseCreate = () => {
+    setOpenCreate(false);
+  };
 
-  //   const handleNewImageUpload = (file: File | null) => {
-  //     if (!file) return;
-  //     setNewImageFile(file);
-  //     setPreviewNewImage(URL.createObjectURL(file));
-  //   };
+  const handleReleaseCreated = () => {
+    fetchReleases();
+    setOpenCreate(false);
 
-  // ---------------------------
-  //  UPDATE RELEASE
-  // ---------------------------
-
-  //   const startEdit = () => {
-  //     setOriginalArtist(editedArtist);
-  //     setEditMode(true);
-  //   };
-
-  //   const cancelEdit = () => {
-  //     setEditedArtist(originalArtist);
-  //     setPreviewEditImage(null);
-  //     setNewImageFile(null);
-  //     setEditMode(false);
-  //   };
-
-  //   const handleUpdate = async () => {
-  //     try {
-   //     } catch (err) {
-  //     } finally {
-  //       setUploading(false);
-  //     }
-  //   };
-
-  //   const handleEditImageUpload = (file: File | null) => {
-  //     if (!file) return;
-  //     setNewImageFile(file);
-  //     setPreviewEditImage(URL.createObjectURL(file));
-  //   };
-
-  // ---------------------------
-  //  DELETE RELEASE
-  // ---------------------------
-  //   const handleDeleteConfirmed = async () => {
-  //     if (!artistToDelete) return;
-  //     try {
-  //       await remove(artistToDelete.id);
-  //       showSnackbar('Artiste supprimé', 'success');
-  //       setConfirmOpen(false);
-  //       setArtistToDelete(null);
-  //     } catch (err) {
-  //       if (err instanceof Error) {
-  //         showSnackbar(err.message, 'error');
-  //       } else {
-  //         showSnackbar('Erreur inconnue', 'error');
-  //       }
-  //     }
-  //   };
+    showSnackbar('Release créée avec succès', 'success');
+  };
 
   // ---------------------------
   //  PAGINATION & FILTER
@@ -292,10 +145,11 @@ function ReleasesAdmin() {
     return filteredReleases.slice(start, start + rowsPerPage);
   }, [filteredReleases, page, rowsPerPage]);
 
-   /* =======================
+  /* =======================
      LINKS IN MODAL
   ======================= */
   const discogsLink = selectedRelease?.links?.find((link) => link.platform === 'discogs')?.url;
+  const youtubeLink = selectedRelease?.links?.find((link) => link.platform === 'youtube')?.url;
 
   // ---------------------------
   //  HELPERS IMAGE
@@ -402,7 +256,7 @@ function ReleasesAdmin() {
           </>
         )}
         onView={(release: Release) => {
-          fetchSelectedRelease(release.id)
+          fetchSelectedRelease(release.id);
           console.info('Release select on view btn:', release);
         }}
         onDelete={(release: Release) => {
@@ -419,6 +273,14 @@ function ReleasesAdmin() {
         loadingDetail={loadingDetail}
         imageBaseUrl={`${cloudinaryUrl}/jvm/releases`}
         discogsLink={discogsLink}
+        youtubeLink={youtubeLink}
+      />
+
+      <CreateRelease
+        open={openCreate}
+        onClose={handleCloseCreate}
+        onCreated={handleReleaseCreated}
+        onSnackbar={showSnackbar}
       />
 
       {/* <DeleteConfirmDialog

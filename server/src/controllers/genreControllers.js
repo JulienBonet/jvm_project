@@ -35,6 +35,19 @@ export const getGenreById = async (req, res, next) => {
   }
 };
 
+export const getAllGenresBySearch = async (req, res) => {
+  try {
+    const { search } = req.query;
+
+    const artists = await genreModels.findAllGenresBySearch({ search });
+
+    res.json(artists);
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: 'Error fetching genres' });
+  }
+};
+
 /* =========================
    CREATE
 ========================= */

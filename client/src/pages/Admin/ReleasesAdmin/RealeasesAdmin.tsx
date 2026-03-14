@@ -140,7 +140,6 @@ function ReleasesAdmin() {
     if (!releaseToDelete) return;
 
     try {
-      console.info('start handleDeleteConfirmed')
       const res = await fetch(`${backendUrl}/api/release/${releaseToDelete.id}`, {
         method: 'DELETE',
       });
@@ -283,7 +282,6 @@ function ReleasesAdmin() {
         )}
         onView={(release: Release) => {
           fetchSelectedRelease(release.id);
-          console.info('Release select on view btn:', release);
         }}
         onDelete={(release: Release) => {
           setReleaseToDelete(release);

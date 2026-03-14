@@ -38,8 +38,6 @@ function ArtistAdmin() {
     baseEndpoint: '/api/artist',
   });
 
-  console.info('artists', artists);
-
   // -- GLOBAL STATES -- //
   const [selectedArtist, setSelectedArtist] = useState<Artist | null>(null);
   const [searchTerm, setSearchTerm] = useState('');
@@ -63,8 +61,6 @@ function ArtistAdmin() {
   const [editedArtist, setEditedArtist] = useState<Artist | null>(null);
   const [previewEditImage, setPreviewEditImage] = useState<string | null>(null);
   const [uploading, setUploading] = useState(false);
-
-  console.info('originalArtist', originalArtist);
 
   // --  DELETE STATES --//
 
@@ -188,7 +184,6 @@ function ArtistAdmin() {
       }
 
       await create(formData);
-      console.info('formData', formData);
       showSnackbar('Artiste créé avec succès', 'success');
 
       setOpenCreate(false);
@@ -198,7 +193,6 @@ function ArtistAdmin() {
         image_url: '',
         discogs_id: undefined,
       });
-      console.info('newArtist', newArtist);
       setPreviewNewImage(null);
       setNewImageFile(null);
     } catch (err) {

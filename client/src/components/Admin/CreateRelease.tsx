@@ -74,10 +74,6 @@ function CreateRelease({ open, onClose, onCreated, onSnackbar }: CreateReleasePr
   const [discogsLink, setDiscogLink] = useState<string>('');
   const [youtubeLink, setYoutubeLink] = useState<string>('');
 
-  console.info('release', release);
-  console.info('artists', artists);
-  console.info('labels', labels);
-
   // -----------------------
   //  RESET FUNCTION
   // -----------------------
@@ -270,8 +266,6 @@ function CreateRelease({ open, onClose, onCreated, onSnackbar }: CreateReleasePr
         return;
       }
 
-      console.log('Discogs data', data);
-
       populateRelease(data);
     } catch (error) {
       console.error('Discogs fetch error', error);
@@ -322,18 +316,6 @@ function CreateRelease({ open, onClose, onCreated, onSnackbar }: CreateReleasePr
         ]),
       );
 
-      console.log('formData envoyé :', {
-        releasePayload,
-        artists,
-        labels,
-        genres,
-        styles,
-        tracks,
-        coverFile,
-        disc,
-        discogsLink,
-        youtubeLink,
-      });
 
       // envoi post formData
       const response = await fetch(`${backendUrl}/api/release`, {
@@ -347,7 +329,6 @@ function CreateRelease({ open, onClose, onCreated, onSnackbar }: CreateReleasePr
       }
 
       const data = await response.json();
-      console.log('response backend :', data);
 
       // alert('Release créée !');
       onCreated();

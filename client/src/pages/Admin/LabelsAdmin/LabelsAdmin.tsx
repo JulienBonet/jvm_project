@@ -63,9 +63,6 @@ function LabelsAdmin() {
   const [previewEditImage, setPreviewEditImage] = useState<string | null>(null);
   const [uploading, setUploading] = useState(false);
 
-  console.info('originalLabel', originalLabel)
-  console.info('editedLabel', editedLabel)
-
   // --  DELETE STATES --//
 
   const [labelToDelete, setLabelToDelete] = useState<Label | null>(null);

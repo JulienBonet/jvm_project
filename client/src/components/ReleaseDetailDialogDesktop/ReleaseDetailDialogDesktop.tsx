@@ -92,7 +92,7 @@ function ReleaseDetailDialogDesktop({
                   <Typography component="span" fontWeight="bold">
                     Labels:
                   </Typography>{' '}
-                  {releaseDetail.labels.map((l) => `${l.name} (${l.catalog_number})`).join(', ')}
+                  {releaseDetail.labels.map((l) => `${l.name}`).join(', ')}
                 </Typography>
 
                 {releaseDetail.genres && (

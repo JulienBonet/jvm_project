@@ -25,6 +25,7 @@ function HomeMobile() {
   // -- GLOBAL STATES -- //
   const { selectedFormat, getSize } = useFormat();
   const [releases, setReleases] = useState<ReleaseMobile[]>([]);
+  console.log('releases', releases);
 
   // -- FILTER STATES -- //
   const [groupBy, setGroupBy] = useState<GroupByOption>('title');
@@ -47,6 +48,7 @@ function HomeMobile() {
     fetch(`${backendUrl}/api/mobile?size=${getSize()}`)
       .then((res) => res.json())
       .then((data: ReleaseMobile[]) => {
+        console.log('Releases fetched:', data);
         setReleases(data);
         setOpenGroup({});
       })
@@ -110,7 +112,11 @@ function HomeMobile() {
   // =======================
   const filteredReleases = useMemo(() => {
     if (!search) return releases;
-    return releases.filter((r) => getGroupValue(r).toLowerCase().includes(search.toLowerCase()));
+    const searchLower = search.toLowerCase();
+    return releases.filter((r) => {
+      const value = getGroupValue(r) ?? '';
+      return value.toLowerCase().includes(searchLower);
+    });
   }, [releases, search, groupBy]);
 
   // =======================
@@ -197,7 +203,11 @@ function HomeMobile() {
     setSelectedReleaseId(null);
   };
 
+  // =======================
+  // EXTERNAL LINK
+  // =======================
   const discogsLink = releaseDetail?.links?.find((link) => link.platform === 'discogs')?.url;
+  const youtubeLink = releaseDetail?.links?.find((link) => link.platform === 'youtube')?.url;
 
   // =======================
   // RENDER
@@ -245,21 +255,24 @@ function HomeMobile() {
       </section>
 
       <section className="releases_list_section_mobile">
-        {!search &&
-          groupedReleases &&
-          sortedLetters.map((letter) => (
-            <div key={letter}>
-              <GroupHeader
-                letter={letter}
-                isOpen={openGroup[letter] ?? false}
-                onToggle={() => toggleGroup(letter)}
-              />
-              {openGroup[letter] &&
-                groupedReleases[letter]?.map((r) => (
-                  <ReleaseItemMobile key={r.id} release={r} onInfoClick={handleOpenInfo} />
-                ))}
-            </div>
-          ))}
+        {search
+          ? filteredReleases.map((r) => (
+              <ReleaseItemMobile key={r.id} release={r} onInfoClick={handleOpenInfo} />
+            ))
+          : groupedReleases &&
+            sortedLetters.map((letter) => (
+              <div key={letter}>
+                <GroupHeader
+                  letter={letter}
+                  isOpen={openGroup[letter] ?? false}
+                  onToggle={() => toggleGroup(letter)}
+                />
+                {openGroup[letter] &&
+                  groupedReleases[letter]?.map((r) => (
+                    <ReleaseItemMobile key={r.id} release={r} onInfoClick={handleOpenInfo} />
+                  ))}
+              </div>
+            ))}
       </section>
 
       <ReleaseDetailDialogMobile
@@ -269,6 +282,7 @@ function HomeMobile() {
         loadingDetail={loadingDetail}
         imageBaseUrl={`${cloudinaryUrl}/jvm/releases`}
         discogsLink={discogsLink}
+        youtubeLink={youtubeLink}
       />
     </div>
   );

@@ -11,6 +11,7 @@ import {
 } from '@mui/material';
 import CloseIcon from '@mui/icons-material/Close';
 import DiscogsLogo from '../../../assets/images/Discogs.png';
+import youtubeLogo from '../../../assets/images/youtube.png';
 import { ReleaseMDetail } from '../../../types/entities/release.types';
 import { Track } from '../../../types/entities/track.types';
 
@@ -21,6 +22,7 @@ interface ReleaseDetailDialogMobileProps {
   loadingDetail: boolean;
   imageBaseUrl: string;
   discogsLink?: string;
+  youtubeLink?: string;
   tracks?: Track[];
 }
 
@@ -31,8 +33,10 @@ function ReleaseDetailDialogMobile({
   loadingDetail,
   imageBaseUrl,
   discogsLink,
+  youtubeLink,
 }: ReleaseDetailDialogMobileProps) {
   if (!releaseDetail) return null;
+  console.log('releaseDetail', releaseDetail);
 
   const firstTrack = releaseDetail.tracks?.[0];
 
@@ -80,7 +84,7 @@ function ReleaseDetailDialogMobile({
               <Typography component="span" fontWeight="bold">
                 Labels:
               </Typography>{' '}
-              {releaseDetail.labels.map((l) => `${l.name} (${l.catalog_number})`).join(', ')}
+              {releaseDetail.labels.map((l) => `${l.name}`).join(', ')}
             </Typography>
 
             {releaseDetail.genres && (
@@ -92,7 +96,7 @@ function ReleaseDetailDialogMobile({
               </Typography>
             )}
 
-            {releaseDetail.styles?.length && (
+            {releaseDetail.styles && releaseDetail.styles.length > 0 && (
               <Typography gutterBottom>
                 <Typography component="span" fontWeight="bold">
                   Styles:
@@ -173,18 +177,40 @@ function ReleaseDetailDialogMobile({
               </>
             )}
 
-            {discogsLink && (
+            {(discogsLink || youtubeLink) && (
               <>
                 <Divider sx={{ my: 2 }} />
-                <Box sx={{ display: 'flex', justifyContent: 'center' }}>
-                  <IconButton
-                    component="a"
-                    href={discogsLink}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                  >
-                    <img src={DiscogsLogo} alt="Discogs" style={{ height: 40 }} />
-                  </IconButton>
+
+                <Box
+                  sx={{
+                    display: 'flex',
+                    justifyContent: 'center',
+                    alignItems: 'center',
+                    flexWrap: 'wrap',
+                    gap: 2,
+                  }}
+                >
+                  {discogsLink && (
+                    <IconButton
+                      component="a"
+                      href={discogsLink}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                    >
+                      <img src={DiscogsLogo} alt="Discogs" style={{ height: 40 }} />
+                    </IconButton>
+                  )}
+
+                  {youtubeLink && (
+                    <IconButton
+                      component="a"
+                      href={youtubeLink}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                    >
+                      <img src={youtubeLogo} alt="YouTube" style={{ height: 40 }} />
+                    </IconButton>
+                  )}
                 </Box>
               </>
             )}

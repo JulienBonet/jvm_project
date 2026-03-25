@@ -433,6 +433,15 @@ function ReleaseEditForm({
                   </MenuItem>
                 ))}
               </TextField>
+
+              <TextField
+                fullWidth
+                label="notes"
+                multiline
+                maxRows={20}
+                value={release.notes}
+                onChange={(e) => setRelease({ ...release, notes: e.target.value })}
+              />
             </Stack>
           </CardContent>
         </Card>

@@ -62,6 +62,8 @@ export interface ReleaseMDetail {
   notes?: string;
   release_type?: string;
 
+  discogs_id?: string; 
+
   artists: Artist[];
   labels: { name: string; catalog_number?: string }[];
 
@@ -73,6 +75,7 @@ export interface ReleaseMDetail {
   tracks?: Track[];
 
   links?: ReleaseLink[];
+  
 }
 
 // create realease
@@ -157,4 +160,23 @@ export interface DiscogsRelease {
   images?: DiscogsImage[];
 
   uri?: string;
+}
+
+// update
+export interface ReleaseFormState {
+  title: string;
+  year: string;
+  country: string;
+  barcode: string;
+  release_type: string;
+  notes: string;
+  image_url: string;
+  discogs_id: string;
+  discogs_image_url?: string;
+}
+
+export interface DiscFormState {
+  format: string;
+  size: string;
+  speed: string;
 }

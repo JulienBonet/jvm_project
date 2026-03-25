@@ -12,13 +12,12 @@ import {
   Table,
   TableBody,
   TableCell,
-  TableHead,
   TableRow,
 } from '@mui/material';
 import DeleteIcon from '@mui/icons-material/Delete';
 
 import EntitySelector from '../Admin/EntitySelector';
-import { ReleaseMDetail, DiscogsRelease, Entity } from '../../types/entities/release.types';
+import { ReleaseMDetail, ReleaseFormState, DiscFormState, DiscogsRelease, Entity } from '../../types/entities/release.types';
 import { createTrack } from '../../types/entities/track.types';
 
 interface ReleaseEditFormProps {
@@ -28,6 +27,8 @@ interface ReleaseEditFormProps {
   onUpdated: () => void;
   onSnackbar?: (msg: string, type?: 'success' | 'error') => void;
 }
+
+
 
 function ReleaseEditForm({
   releaseDetail,
@@ -45,7 +46,7 @@ function ReleaseEditForm({
   // -----------------------
   // STATES
   // -----------------------
-  const [release, setRelease] = useState({
+  const [release, setRelease] = useState<ReleaseFormState>({
     title: '',
     year: '',
     country: '',
@@ -54,6 +55,7 @@ function ReleaseEditForm({
     notes: '',
     image_url: '',
     discogs_id: '',
+    discogs_image_url: undefined,
   });
 
   const [artists, setArtists] = useState<Entity[]>([]);
@@ -62,7 +64,7 @@ function ReleaseEditForm({
   const [styles, setStyles] = useState<Entity[]>([]);
 
   const [tracks, setTracks] = useState<createTrack[]>([]);
-  const [disc, setDisc] = useState({
+  const [disc, setDisc] = useState<DiscFormState>({
     format: '',
     size: '',
     speed: '',
@@ -98,14 +100,20 @@ function ReleaseEditForm({
       notes: releaseDetail.notes || '',
       image_url: coverUrl || '',
       discogs_image_url: '',
-      discogs_id: releaseDetail.discogs_id || '',
+      discogs_id: releaseDetail.discogs_id ?? '',
     });
 
     setArtists(releaseDetail.artists || []);
     setLabels(releaseDetail.labels || []);
     setGenres(releaseDetail.genres || []);
     setStyles(releaseDetail.styles || []);
-    setTracks(releaseDetail.tracks || []);
+    setTracks(
+      releaseDetail.tracks?.map((t) => ({
+        position: t.position,
+        title: t.title,
+        duration: '',
+      })) ?? [],
+    );
 
     setDisc({
       format: releaseDetail.release_type || '',

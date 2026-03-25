@@ -8,7 +8,7 @@ import ReleaseEditForm from './ReleaseEditForm';
 
 import { ReleaseMDetail } from '../../types/entities/release.types';
 
-interface Props {
+interface ReleaseDetailDialogDesktopProps {
   open: boolean;
   onClose: () => void;
   releaseDetail: ReleaseMDetail | null;
@@ -28,7 +28,7 @@ function ReleaseDetailDialogDesktop({
   discogsLink,
   youtubeLink,
   onUpdated,
-}: Props) {
+}: ReleaseDetailDialogDesktopProps) {
   const [mode, setMode] = useState<'read' | 'edit'>('read');
 
   const handleClose = () => {

@@ -303,15 +303,22 @@ function ReleaseEditForm({
     } catch (err) {
       console.error(err);
       onSnackbar?.('Erreur update', 'error');
-    }finally {
-    setLoading(false);
-  }
+    } finally {
+      setLoading(false);
+    }
   };
 
   if (!releaseDetail) return null;
 
   return (
-    <Stack spacing={3}>
+    <Stack
+      spacing={3}
+      sx={{
+        opacity: loading ? 0.5 : 1,
+        pointerEvents: loading ? 'none' : 'auto',
+        transition: 'opacity 0.2s ease',
+      }}
+    >
       <Typography
         sx={{
           fontFamily: 'var(--font-01)',

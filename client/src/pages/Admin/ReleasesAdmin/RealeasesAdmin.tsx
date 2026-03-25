@@ -12,19 +12,22 @@ import SearchIcon from '@mui/icons-material/Search';
 import EntityTable from '../../../components/Admin/EntityTable';
 import ReleaseDetailDialogDesktop from '../../../components/ReleaseDetailDialogDesktop/ReleaseDetailDialogDesktop';
 import CreateRelease from '../../../components/Admin/CreateRelease';
-import EntityDetailModal from '../../../components/Admin/EntityDetailModal.jsx';
 import DeleteConfirmDialog from '../../../components/Admin/DeleteConfirmDialog.jsx';
+import { useReleaseDetail } from '../../../hooks/useReleaseDetail';
 import AdminSnackbar from '../../../components/Admin/AdminSnackbar';
-import { Release, ReleaseMDetail } from '../../../types/entities/release.types';
+import { Release } from '../../../types/entities/release.types';
 import '../adminPage.css';
 
 function ReleasesAdmin() {
   const backendUrl = import.meta.env.VITE_BACKEND_URL;
   const cloudinaryUrl = import.meta.env.VITE_CLOUDINARY_BASE_URL;
 
+  const showSnackbar = (message: string, severity: SnackbarSeverity = 'success') => {
+    setSnackbar({ open: true, message, severity });
+  };
+
   // -- GLOBAL STATES -- //
   const [releases, setReleases] = useState<Release[]>([]);
-  const [selectedRelease, setSelectedRelease] = useState<ReleaseMDetail | null>(null);
   const [loading, setLoading] = useState<boolean>(false);
   const [error, setError] = useState<string | null>(null);
   const [searchTerm, setSearchTerm] = useState('');
@@ -33,21 +36,13 @@ function ReleasesAdmin() {
   const [openCreate, setOpenCreate] = useState<boolean>(false);
 
   // --  UPDATE / EDIT STATES --/
-  const [originalRelease, setOriginalRelease] = useState(null);
-  const [loadingDetail, setLoadingDetail] = useState(false);
-  const [openDetail, setOpenDetail] = useState(false);
-  const [editMode, setEditMode] = useState(false);
-  const [editedRelease, setEditedRelease] = useState<Release | null>(null);
-  const [previewEditImage, setPreviewEditImage] = useState<string | null>(null);
-  const [uploading, setUploading] = useState(false);
+  const { selectedRelease, loadingDetail, openDetail, setOpenDetail, fetchSelectedRelease } =
+    useReleaseDetail(backendUrl, showSnackbar);
 
   // --  DELETE STATES --//
 
   const [releaseToDelete, setReleaseToDelete] = useState<Release | null>(null);
   const [confirmOpen, setConfirmOpen] = useState<boolean>(false);
-
-  // --  FETCHING EXTERNES STATES --//
-  const [fetchingDiscogs, setFetchingDiscogs] = useState(false);
 
   // --  PAGINATION STATES --//
 
@@ -67,10 +62,6 @@ function ReleasesAdmin() {
     message: '',
     severity: 'success',
   });
-
-  const showSnackbar = (message: string, severity: SnackbarSeverity = 'success') => {
-    setSnackbar({ open: true, message, severity });
-  };
 
   // ---------------------------
   //  FETCH RELEASE
@@ -94,30 +85,12 @@ function ReleasesAdmin() {
     }
   };
 
+  // fetch des releases au chargement
   useEffect(() => {
     fetchReleases();
   }, []);
 
-  const fetchSelectedRelease = async (id: number) => {
-    try {
-      setLoadingDetail(true);
-
-      const res = await fetch(`${backendUrl}/api/release/${id}`);
-
-      if (!res.ok) throw new Error('Erreur serveur');
-
-      const data = await res.json();
-
-      setSelectedRelease(data);
-      setOpenDetail(true);
-    } catch (err) {
-      console.error(err);
-      showSnackbar('Erreur chargement release', 'error');
-    } finally {
-      setLoadingDetail(false);
-    }
-  };
-
+  // recharger aprés update
   const handleReleaseUpdated = async () => {
     // 1️⃣ refetch liste globale
     await fetchReleases();

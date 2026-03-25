@@ -152,6 +152,7 @@ function ReleasesByLabel() {
      LINKS IN MODAL
   ======================= */
   const discogsLink = releaseDetail?.links?.find((link) => link.platform === 'discogs')?.url;
+  const youtubeLink = releaseDetail?.links?.find((link) => link.platform === 'youtube')?.url;
 
   /* =======================
      RENDER
@@ -270,6 +271,7 @@ function ReleasesByLabel() {
         loadingDetail={loadingDetail}
         imageBaseUrl={`${cloudinaryUrl}/jvm/releases`}
         discogsLink={discogsLink}
+        youtubeLink={youtubeLink}
       />
       {/* END MODAL */}
     </div>

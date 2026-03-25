@@ -1,8 +1,16 @@
 // client/src/pages/Home/HomeDesktop.tsx
 import { useEffect, useState, useRef } from 'react';
-import { TextField, Select, MenuItem, Button, InputLabel, FormControl } from '@mui/material';
-import InputAdornment from '@mui/material/InputAdornment';
-import IconButton from '@mui/material/IconButton';
+import {
+  TextField,
+  Select,
+  MenuItem,
+  Button,
+  InputLabel,
+  FormControl,
+  InputAdornment,
+  IconButton,
+  Typography,
+} from '@mui/material';
 import SearchIcon from '@mui/icons-material/Search';
 import ClearIcon from '@mui/icons-material/Clear';
 import SortByAlphaIcon from '@mui/icons-material/SortByAlpha';
@@ -10,41 +18,58 @@ import CalendarMonthIcon from '@mui/icons-material/CalendarMonth';
 import ArrowUpwardIcon from '@mui/icons-material/ArrowUpward';
 import ArrowDownwardIcon from '@mui/icons-material/ArrowDownward';
 import RestartAltIcon from '@mui/icons-material/RestartAlt';
-import ReleaseCard from '../../components/ReleaseCard/ReleaseCard.jsx';
+import ReleaseCard from '../../components/ReleaseCard/ReleaseCard';
 import ReleaseDetailDialogDesktop from '../../components/ReleaseDetailDialogDesktop/ReleaseDetailDialogDesktop';
-import { Release, Genre, Style, ReleaseMDetail } from '../../types/entities/release.types';
+import { Release, Genre, Style } from '../../types/entities/release.types';
+import { useReleaseDetail } from '../../hooks/useReleaseDetail';
 import './homeDesktop.css';
 
 function HomeDesktop() {
-  // -- GLOBAL STATES -- //
   const searchRef = useRef<HTMLInputElement | null>(null);
+  const backendUrl = import.meta.env.VITE_BACKEND_URL;
+  const cloudinaryUrl = import.meta.env.VITE_CLOUDINARY_BASE_URL;
+
+  // ---------------------------
+  // STATES GLOBAUX
+  // ---------------------------
   const [releases, setReleases] = useState<Release[]>([]);
   const [genres, setGenres] = useState<Genre[]>([]);
   const [styles, setStyles] = useState<Style[]>([]);
-
-  // -- FILTER STATES -- //
-  const [searchTerm, setSearchTerm] = useState<string>('');
-  const [selectedGenre, setSelectedGenre] = useState<string>('');
-  const [selectedStyle, setSelectedStyle] = useState<string>('');
+  // states Filter
+  const [searchTerm, setSearchTerm] = useState('');
+  const [selectedGenre, setSelectedGenre] = useState('');
+  const [selectedStyle, setSelectedStyle] = useState('');
   const [discFilter, setDiscFilter] = useState<'ALL' | '33T' | '45T'>('ALL');
   const [alphaOrder, setAlphaOrder] = useState<'asc' | 'desc' | null>(null);
   const [yearOrder, setYearOrder] = useState<'asc' | 'desc' | null>(null);
+  // state Loading
+  const [loadingReleases, setLoadingReleases] = useState(true);
 
-  // -- MODAL STATES -- //
-  const [selectedReleaseId, setSelectedReleaseId] = useState<number | null>(null);
-  const [releaseDetail, setReleaseDetail] = useState<ReleaseMDetail | null>(null);
-  const [loadingDetail, setLoadingDetail] = useState<boolean>(false);
-  const [openModal, setOpenModal] = useState<boolean>(false);
+  // ---------------------------
+  // SNACKBAR
+  // ---------------------------
+  type SnackbarSeverity = 'success' | 'error' | 'warning' | 'info';
+  const [snackbar, setSnackbar] = useState<{
+    open: boolean;
+    message: string;
+    severity: SnackbarSeverity;
+  }>({
+    open: false,
+    message: '',
+    severity: 'success',
+  });
+  const showSnackbar = (message: string, severity: SnackbarSeverity = 'success') =>
+    setSnackbar({ open: true, message, severity });
 
-  // -- LOADER STATES -- //
-  const [loadingReleases, setLoadingReleases] = useState<boolean>(true);
+  // ---------------------------
+  // HOOK DETAIL RELEASE
+  // ---------------------------
+  const { selectedRelease, loadingDetail, openDetail, setOpenDetail, fetchSelectedRelease } =
+    useReleaseDetail(backendUrl, showSnackbar);
 
-  const backendUrl = `${import.meta.env.VITE_BACKEND_URL}`;
-  const cloudinaryUrl = `${import.meta.env.VITE_CLOUDINARY_BASE_URL}`;
-
-  /* =======================
-     FETCHS INITIALS
-  ======================= */
+  // ---------------------------
+  // FETCH RELEASES / GENRES / STYLES
+  // ---------------------------
   const fetchReleases = async () => {
     try {
       setLoadingReleases(true);
@@ -84,10 +109,9 @@ function HomeDesktop() {
     fetchStyles();
   }, []);
 
-  /* =======================
-     RESET
-  ======================= */
-
+  // ---------------------------
+  // RESET
+  // ---------------------------
   const handleReset = () => {
     setSearchTerm('');
     setSelectedGenre('');
@@ -97,133 +121,77 @@ function HomeDesktop() {
     setYearOrder(null);
   };
 
-  /* =======================
-     SORT TOGGLES
-  ======================= */
-
+  // ---------------------------
+  // SORT TOGGLES
+  // ---------------------------
   const handleAlphaSort = () => {
-    if (alphaOrder === 'asc') setAlphaOrder('desc');
-    else setAlphaOrder('asc');
-
+    setAlphaOrder(alphaOrder === 'asc' ? 'desc' : 'asc');
     setYearOrder(null);
   };
 
   const handleYearSort = () => {
-    if (yearOrder === 'asc') setYearOrder('desc');
-    else setYearOrder('asc');
-
+    setYearOrder(yearOrder === 'asc' ? 'desc' : 'asc');
     setAlphaOrder(null);
   };
 
-  /* =======================
-     FILTRE
-  ======================= */
-
+  // ---------------------------
+  // FILTRAGE
+  // ---------------------------
   const filteredReleases = releases
-    // 🔎 Recherche
-    .filter((release) => release.title.toLowerCase().includes(searchTerm.toLowerCase()))
-
-    // 🎵 Genre
-    .filter((release) =>
-      selectedGenre ? release.genres?.toLowerCase().includes(selectedGenre.toLowerCase()) : true,
+    .filter((r) => r.title.toLowerCase().includes(searchTerm.toLowerCase()))
+    .filter((r) =>
+      selectedGenre ? r.genres?.toLowerCase().includes(selectedGenre.toLowerCase()) : true,
     )
-
-    // 🎵 Style
-    .filter((release) =>
-      selectedStyle ? release.styles?.toLowerCase().includes(selectedStyle.toLowerCase()) : true,
+    .filter((r) =>
+      selectedStyle ? r.styles?.toLowerCase().includes(selectedStyle.toLowerCase()) : true,
     )
-
-    // 💿 Disc Size
-    .filter((release) => {
-      if (discFilter === '33T') return release.disc_size === '12';
-      if (discFilter === '45T') return release.disc_size === '7';
+    .filter((r) => {
+      if (discFilter === '33T') return r.disc_size === '12';
+      if (discFilter === '45T') return r.disc_size === '7';
       return true;
     })
-
-    // 🔤 + ⏳ Tri cumulatif
     .sort((a, b) => {
-      // 1️⃣ Tri alphabétique
-      if (alphaOrder) {
+      if (alphaOrder)
         return alphaOrder === 'asc'
           ? a.title.localeCompare(b.title)
           : b.title.localeCompare(a.title);
-      }
-
-      // 2️⃣ Tri chronologique
-      if (yearOrder) {
+      if (yearOrder)
         return yearOrder === 'asc' ? (a.year ?? 0) - (b.year ?? 0) : (b.year ?? 0) - (a.year ?? 0);
-      }
-
-      // 3️⃣ Pas de tri
       return 0;
     });
 
-  /* =======================
-     HANDLERS MODAL
-  ======================= */
+  // ---------------------------
+  // HANDLERS MODAL
+  // ---------------------------
   const handleOpenInfo = async (release: Release) => {
-    setSelectedReleaseId(release.id);
-    setOpenModal(true);
-    setLoadingDetail(true);
-
-    try {
-      const res = await fetch(`${backendUrl}/api/release/${release.id}`);
-      const data = await res.json();
-      setReleaseDetail(data);
-    } catch (err) {
-      console.error('Erreur fetch release detail:', err);
-    } finally {
-      setLoadingDetail(false);
-    }
+    await fetchSelectedRelease(release.id);
   };
 
-  const handleCloseModal = () => {
-    setOpenModal(false);
-    setReleaseDetail(null);
-    setSelectedReleaseId(null);
-  };
+  const handleCloseModal = () => setOpenDetail(false);
 
   const handleReleaseUpdated = async () => {
-    // 🔹 Refetch du détail si une release est ouverte
-    if (selectedReleaseId !== null) {
-      setLoadingDetail(true);
-      try {
-        const res = await fetch(`${backendUrl}/api/release/${selectedReleaseId}`);
-        if (!res.ok) throw new Error('Erreur serveur');
-        const data: ReleaseMDetail = await res.json();
-        setReleaseDetail(data); // 🔥 met à jour le modal avec les nouvelles infos
-      } catch (err) {
-        console.error('Erreur refetch release detail:', err);
-      } finally {
-        setLoadingDetail(false);
-      }
-    }
-
-    // 🔹 Refetch de la liste complète pour que le listing soit à jour
     await fetchReleases();
-    await fetchGenres();
-    await fetchStyles();
+    if (selectedRelease?.id) await fetchSelectedRelease(selectedRelease.id);
   };
 
-  /* =======================
-    BUTTONS HELPER
-  ======================= */
+  // ---------------------------
+  // GET SORT ICON
+  // ---------------------------
   const getSortIcon = (order: 'asc' | 'desc' | null) => {
     if (order === 'asc') return <ArrowUpwardIcon fontSize="small" />;
     if (order === 'desc') return <ArrowDownwardIcon fontSize="small" />;
     return null;
   };
 
-  /* =======================
-     LINKS IN MODAL
-  ======================= */
-  const discogsLink = releaseDetail?.links?.find((link) => link.platform === 'discogs')?.url;
-  const youtubeLink = releaseDetail?.links?.find((link) => link.platform === 'youtube')?.url;
+  // ---------------------------
+  // LINKS
+  // ---------------------------
+  const discogsLink = selectedRelease?.links?.find((link) => link.platform === 'discogs')?.url;
+  const youtubeLink = selectedRelease?.links?.find((link) => link.platform === 'youtube')?.url;
 
-  /* =======================
-     RENDER
-  ======================= */
-
+  // ---------------------------
+  // RENDER
+  // ---------------------------
   return (
     <div className="home-desktop">
       <section className="search_filter_section_desktop sticky-section">
@@ -262,7 +230,6 @@ function HomeDesktop() {
             onChange={(e) => setSelectedGenre(e.target.value)}
           >
             <MenuItem value="">All</MenuItem>
-
             {genres.map((genre) => (
               <MenuItem key={genre.id} value={genre.name}>
                 {genre.name}
@@ -271,7 +238,7 @@ function HomeDesktop() {
           </Select>
         </FormControl>
 
-        {/* GENRE STYLE */}
+        {/* STYLE SELECT */}
         <FormControl size="small" style={{ minWidth: 150 }} disabled={selectedGenre !== ''}>
           <InputLabel>Style</InputLabel>
           <Select
@@ -280,7 +247,6 @@ function HomeDesktop() {
             onChange={(e) => setSelectedStyle(e.target.value)}
           >
             <MenuItem value="">All</MenuItem>
-
             {styles.map((style) => (
               <MenuItem key={style.id} value={style.name}>
                 {style.name}
@@ -293,36 +259,28 @@ function HomeDesktop() {
         <div>
           <Button
             variant={discFilter === 'ALL' ? 'contained' : 'outlined'}
-            sx={{
-              borderRadius: '5px 0 0 5px',
-            }}
             onClick={() => setDiscFilter('ALL')}
+            sx={{ borderRadius: '5px 0 0 5px' }}
           >
             TOUT
           </Button>
-
           <Button
             variant={discFilter === '33T' ? 'contained' : 'outlined'}
-            sx={{
-              borderRadius: 0,
-            }}
             onClick={() => setDiscFilter('33T')}
+            sx={{ borderRadius: 0 }}
           >
             33T
           </Button>
-
           <Button
             variant={discFilter === '45T' ? 'contained' : 'outlined'}
-            sx={{
-              borderRadius: '0 5px 5px 0',
-            }}
             onClick={() => setDiscFilter('45T')}
+            sx={{ borderRadius: '0 5px 5px 0' }}
           >
             45T
           </Button>
         </div>
 
-        {/* ALPHABETICAL - CHRONOLOGICAL */}
+        {/* SORT */}
         <div>
           <Button
             variant="outlined"
@@ -332,7 +290,6 @@ function HomeDesktop() {
             <SortByAlphaIcon />
             {getSortIcon(alphaOrder)}
           </Button>
-
           <Button
             variant="outlined"
             onClick={handleYearSort}
@@ -348,10 +305,7 @@ function HomeDesktop() {
           variant="outlined"
           color="secondary"
           onClick={handleReset}
-          sx={{
-            borderRadius: '5px',
-            minWidth: 40,
-          }}
+          sx={{ borderRadius: '5px', minWidth: 40 }}
         >
           <RestartAltIcon />
         </Button>
@@ -374,16 +328,15 @@ function HomeDesktop() {
 
       {/* MODAL */}
       <ReleaseDetailDialogDesktop
-        open={openModal}
+        open={openDetail}
         onClose={handleCloseModal}
-        releaseDetail={releaseDetail}
+        releaseDetail={selectedRelease}
         loadingDetail={loadingDetail}
         imageBaseUrl={`${cloudinaryUrl}/jvm/releases`}
         discogsLink={discogsLink}
         youtubeLink={youtubeLink}
         onUpdated={handleReleaseUpdated}
       />
-      {/* END MODAL */}
     </div>
   );
 }

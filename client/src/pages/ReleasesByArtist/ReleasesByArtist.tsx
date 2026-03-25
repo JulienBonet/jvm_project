@@ -1,4 +1,3 @@
-// client\src\pages\ReleasesByArtist\ReleasesByArtist.tsx
 import { useEffect, useState } from 'react';
 import { useParams, useLocation, Link } from 'react-router-dom';
 import { Button, Typography } from '@mui/material';
@@ -10,36 +9,49 @@ import ArrowDownwardIcon from '@mui/icons-material/ArrowDownward';
 import RestartAltIcon from '@mui/icons-material/RestartAlt';
 import ReleaseCard from '../../components/ReleaseCard/ReleaseCard';
 import ReleaseDetailDialogDesktop from '../../components/ReleaseDetailDialogDesktop/ReleaseDetailDialogDesktop';
+import { Release } from '../../types/entities/release.types';
+import { useReleaseDetail } from '../../hooks/useReleaseDetail';
 import './releasesByArtist.css';
-import { Release, ReleaseMDetail } from '../../types/entities/release.types';
 
 function ReleasesByArtist() {
-  // -- GLOBAL STATES -- //
   const { id } = useParams<{ id: string }>();
-  const [releases, setReleases] = useState<Release[]>([]);
+  const location = useLocation();
+  const artistName = location.state?.artistName || 'N/A';
 
-  // -- FILTER STATES -- //
+  const backendUrl = import.meta.env.VITE_BACKEND_URL;
+  const cloudinaryUrl = import.meta.env.VITE_CLOUDINARY_BASE_URL;
+
+  // ---------------------------
+  // SNACKBAR
+  // ---------------------------
+  type SnackbarSeverity = 'success' | 'error' | 'warning' | 'info';
+  const [snackbar, setSnackbar] = useState<{
+    open: boolean;
+    message: string;
+    severity: SnackbarSeverity;
+  }>({ open: false, message: '', severity: 'success' });
+
+  const showSnackbar = (message: string, severity: SnackbarSeverity = 'success') => {
+    setSnackbar({ open: true, message, severity });
+  };
+
+  // ---------------------------
+  // HOOK DETAIL RELEASE
+  // ---------------------------
+  const { selectedRelease, loadingDetail, openDetail, setOpenDetail, fetchSelectedRelease } =
+    useReleaseDetail(backendUrl, showSnackbar);
+
+  // ---------------------------
+  // GLOBAL STATES
+  // ---------------------------
+  const [releases, setReleases] = useState<Release[]>([]);
   const [discFilter, setDiscFilter] = useState<'ALL' | '33T' | '45T'>('ALL');
   const [alphaOrder, setAlphaOrder] = useState<'asc' | 'desc' | null>(null);
   const [yearOrder, setYearOrder] = useState<'asc' | 'desc' | null>(null);
 
-  // -- MODAL STATES -- //
-  const [selectedReleaseId, setSelectedReleaseId] = useState<number | null>(null);
-  const [releaseDetail, setReleaseDetail] = useState<ReleaseMDetail | null>(null);
-  const [loadingDetail, setLoadingDetail] = useState<boolean>(false);
-  const [openModal, setOpenModal] = useState<boolean>(false);
-
-  console.info('releases', releases);
-
-  const location = useLocation();
-  const artistName = location.state?.artistName || 'N/A';
-
-  const backendUrl = `${import.meta.env.VITE_BACKEND_URL}`;
-  const cloudinaryUrl = `${import.meta.env.VITE_CLOUDINARY_BASE_URL}`;
-
-  /* =======================
-     FETCH RELEASES
-  ======================= */
+  // ---------------------------
+  // FETCH RELEASES
+  // ---------------------------
   const fetchReleasesByArtist = async () => {
     try {
       const res = await fetch(`${backendUrl}/api/artist/${id}/releases`);
@@ -50,14 +62,38 @@ function ReleasesByArtist() {
     }
   };
 
-  // useEffect pour charger les données au montage
   useEffect(() => {
     fetchReleasesByArtist();
-  }, []);
+  }, [id]);
 
-  /* =======================
-     RESET
-  ======================= */
+  // ---------------------------
+  // REFRESH AFTER UPDATE
+  // ---------------------------
+  const handleReleaseUpdated = async () => {
+    await fetchReleasesByArtist();
+    if (selectedRelease?.id) {
+      await fetchSelectedRelease(selectedRelease.id);
+    }
+  };
+
+  // ---------------------------
+  // FILTER / SORT
+  // ---------------------------
+  const filteredReleases = releases
+    .filter((release) => {
+      if (discFilter === '33T') return release.disc_size === '12';
+      if (discFilter === '45T') return release.disc_size === '7';
+      return true;
+    })
+    .sort((a, b) => {
+      if (alphaOrder)
+        return alphaOrder === 'asc'
+          ? a.title.localeCompare(b.title)
+          : b.title.localeCompare(a.title);
+      if (yearOrder)
+        return yearOrder === 'asc' ? (a.year ?? 0) - (b.year ?? 0) : (b.year ?? 0) - (a.year ?? 0);
+      return 0;
+    });
 
   const handleReset = () => {
     setDiscFilter('ALL');
@@ -65,98 +101,39 @@ function ReleasesByArtist() {
     setYearOrder(null);
   };
 
-  /* =======================
-     SORT TOGGLES
-  ======================= */
-
   const handleAlphaSort = () => {
-    if (alphaOrder === 'asc') setAlphaOrder('desc');
-    else setAlphaOrder('asc');
-
+    setAlphaOrder(alphaOrder === 'asc' ? 'desc' : 'asc');
     setYearOrder(null);
   };
 
   const handleYearSort = () => {
-    if (yearOrder === 'asc') setYearOrder('desc');
-    else setYearOrder('asc');
-
+    setYearOrder(yearOrder === 'asc' ? 'desc' : 'asc');
     setAlphaOrder(null);
   };
 
-  /* =======================
-     FILTRE
-  ======================= */
-
-  const filteredReleases = releases
-
-    // 💿 Disc Size
-    .filter((release) => {
-      if (discFilter === '33T') return release.disc_size === '12';
-      if (discFilter === '45T') return release.disc_size === '7';
-      return true;
-    })
-
-    // 🔤 + ⏳ Tri cumulatif
-    .sort((a, b) => {
-      // 1️⃣ Tri alphabétique
-      if (alphaOrder) {
-        return alphaOrder === 'asc'
-          ? a.title.localeCompare(b.title)
-          : b.title.localeCompare(a.title);
-      }
-
-      // 2️⃣ Tri chronologique
-      if (yearOrder) {
-        return yearOrder === 'asc' ? (a.year ?? 0) - (b.year ?? 0) : (b.year ?? 0) - (a.year ?? 0);
-      }
-
-      // 3️⃣ Pas de tri
-      return 0;
-    });
-
-  /* =======================
-     HANDLERS MODAL
-  ======================= */
+  // ---------------------------
+  // MODAL HANDLERS
+  // ---------------------------
   const handleOpenInfo = async (release: Release) => {
-    setSelectedReleaseId(release.id);
-    setOpenModal(true);
-    setLoadingDetail(true);
-
-    try {
-      const res = await fetch(`${backendUrl}/api/release/${release.id}`);
-      const data = await res.json();
-      setReleaseDetail(data);
-    } catch (err) {
-      console.error('Erreur fetch release detail:', err);
-    } finally {
-      setLoadingDetail(false);
-    }
+    await fetchSelectedRelease(release.id);
   };
 
   const handleCloseModal = () => {
-    setOpenModal(false);
-    setReleaseDetail(null);
-    setSelectedReleaseId(null);
+    setOpenDetail(false);
   };
 
-  /* =======================
-    BUTTONS HELPER
-  ======================= */
   const getSortIcon = (order: 'asc' | 'desc' | null) => {
     if (order === 'asc') return <ArrowUpwardIcon fontSize="small" />;
     if (order === 'desc') return <ArrowDownwardIcon fontSize="small" />;
     return null;
   };
 
-  /* =======================
-     LINKS IN MODAL
-  ======================= */
-  const discogsLink = releaseDetail?.links?.find((link) => link.platform === 'discogs')?.url;
+  const discogsLink = selectedRelease?.links?.find((link) => link.platform === 'discogs')?.url;
+  const youtubeLink = selectedRelease?.links?.find((link) => link.platform === 'youtube')?.url;
 
-  /* =======================
-     RENDER
-  ======================= */
-
+  // ---------------------------
+  // RENDER
+  // ---------------------------
   return (
     <div className="releases_by_artist">
       <section className="search_filter_section_releases_artist sticky-section">
@@ -164,94 +141,67 @@ function ReleasesByArtist() {
           <ArrowCircleLeftOutlinedIcon
             fontSize="large"
             color="secondary"
-            sx={{
-              transition: '0.2s',
-              '&:hover': {
-                transform: 'scale(1.1)',
-              },
-            }}
+            sx={{ transition: '0.2s', '&:hover': { transform: 'scale(1.1)' } }}
           />
         </Link>
 
-        <Typography
-          sx={{
-            fontSize: 24,
-            fontWeight: 'bold',
-            fontFamily: 'var(--font-01)',
-          }}
-        >
+        <Typography sx={{ fontSize: 24, fontWeight: 'bold', fontFamily: 'var(--font-01)' }}>
           {artistName}
         </Typography>
 
         <div className="filter_btn_releases_artists">
-          {/* DISC FILTER */}
           <div>
             <Button
               variant={discFilter === 'ALL' ? 'contained' : 'outlined'}
               onClick={() => setDiscFilter('ALL')}
-              sx={{
-                borderRadius: '5px 0 0 5px',
-              }}
+              sx={{ borderRadius: '5px 0 0 5px' }}
             >
               TOUT
             </Button>
-
             <Button
               variant={discFilter === '33T' ? 'contained' : 'outlined'}
               onClick={() => setDiscFilter('33T')}
-              sx={{
-                borderRadius: 0,
-              }}
+              sx={{ borderRadius: 0 }}
             >
               33T
             </Button>
-
             <Button
               variant={discFilter === '45T' ? 'contained' : 'outlined'}
               onClick={() => setDiscFilter('45T')}
-              sx={{
-                borderRadius: '0 5px 5px 0',
-              }}
+              sx={{ borderRadius: '0 5px 5px 0' }}
             >
               45T
             </Button>
           </div>
 
-          {/* ALPHABETICAL - CHRONOLOGICAL */}
           <div>
             <Button
               variant="outlined"
               onClick={handleAlphaSort}
               sx={{ borderRadius: '5px 0 0 5px', minWidth: 40 }}
             >
-              <SortByAlphaIcon />
-              {getSortIcon(alphaOrder)}
+              <SortByAlphaIcon /> {getSortIcon(alphaOrder)}
             </Button>
-
             <Button
               variant="outlined"
               onClick={handleYearSort}
               sx={{ borderRadius: '0 5px 5px 0', minWidth: 40 }}
             >
-              <CalendarMonthIcon />
-              {getSortIcon(yearOrder)}
+              <CalendarMonthIcon /> {getSortIcon(yearOrder)}
             </Button>
           </div>
 
-          {/* RESET */}
           <Button
             variant="outlined"
             color="secondary"
             onClick={handleReset}
-            sx={{
-              borderRadius: '5px',
-              minWidth: 40,
-            }}
+            sx={{ borderRadius: '5px', minWidth: 40 }}
           >
             <RestartAltIcon />
           </Button>
         </div>
       </section>
+
       <section className="releases_list_section_releases_artist">
         {filteredReleases.map((release) => (
           <ReleaseCard
@@ -263,16 +213,16 @@ function ReleasesByArtist() {
         ))}
       </section>
 
-      {/* MODAL */}
       <ReleaseDetailDialogDesktop
-        open={openModal}
+        open={openDetail}
         onClose={handleCloseModal}
-        releaseDetail={releaseDetail}
+        releaseDetail={selectedRelease}
         loadingDetail={loadingDetail}
         imageBaseUrl={`${cloudinaryUrl}/jvm/releases`}
         discogsLink={discogsLink}
+        youtubeLink={youtubeLink}
+        onUpdated={handleReleaseUpdated}
       />
-      {/* END MODAL */}
     </div>
   );
 }

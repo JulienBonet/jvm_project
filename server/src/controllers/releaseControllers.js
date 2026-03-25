@@ -5,6 +5,7 @@ import * as releaseCreateModels from '../models/releaseCreateModels.js';
 import { uploadBufferToCloudinary, deleteFromCloudinary } from '../utils/cloudinary.js';
 import { CLOUDINARY_FOLDERS } from '../config/cloudinaryFolders.js';
 import { parseJSON } from '../utils/parsePayload.js';
+import { cleanOrphanEntities } from '../utils/cleanOrphanEntities.js';
 import { eraseRelease } from '../models/releaseDeleteModels.js';
 import { mapDiscogsRelease } from '../services/discogsMapper.js';
 
@@ -160,7 +161,7 @@ export const updateRelease = async (req, res) => {
 
     const payload = {
       release: {
-        ...parseJSON(req.body.release, {}), // si release JSON existe
+        ...parseJSON(req.body.release, {}),
         ...(req.body.title ? { title: req.body.title } : {}),
         ...(req.body.year ? { year: parseInt(req.body.year, 10) } : {}),
         ...(req.body.country ? { country: req.body.country } : {}),
@@ -188,10 +189,31 @@ export const updateRelease = async (req, res) => {
 
     const oldFilename = existingImages[0]?.url || null;
 
-    // 🧨 2. DELETE EXISTING DATA (DB ONLY)
+    // 🧠 2. READ ARTISTS LABELS GENRES STYLES
+    const [oldArtists] = await connection.query(
+      `SELECT artist_id FROM release_artist WHERE release_id = ?`,
+      [id],
+    );
+
+    const [oldLabels] = await connection.query(
+      `SELECT label_id FROM release_label WHERE release_id = ?`,
+      [id],
+    );
+
+    const [oldGenres] = await connection.query(
+      `SELECT genre_id FROM release_genre WHERE release_id = ?`,
+      [id],
+    );
+
+    const [oldStyles] = await connection.query(
+      `SELECT style_id FROM release_style WHERE release_id = ?`,
+      [id],
+    );
+
+    // 🧨 3. DELETE EXISTING DATA (DB ONLY)
     await releaseModels.deleteReleaseRelations(id, connection);
 
-    // 🖼️ 3. IMAGE LOGIC
+    // 🖼️ 4. IMAGE LOGIC
     let finalImage = oldFilename;
 
     if (file) {
@@ -233,11 +255,19 @@ export const updateRelease = async (req, res) => {
     payload.image_filename = finalImage;
     payload.thumbnail_url = payload.release.discogs_image_url || null;
 
-    // 🧱 4. UPDATE MAIN
+    // 🧱 5. UPDATE MAIN
     await releaseModels.updateReleaseMain(id, payload.release, connection);
 
-    // 🧩 5. REINSERT RELATIONS
+    // 🧩 6. REINSERT RELATIONS
     await releaseCreateModels.insertReleaseRelations(id, payload, connection);
+
+    // ✅ 7. CLEAN ORPHANS
+    await cleanOrphanEntities(connection, {
+      artists: oldArtists,
+      labels: oldLabels,
+      genres: oldGenres,
+      styles: oldStyles,
+    });
 
     await connection.commit();
 

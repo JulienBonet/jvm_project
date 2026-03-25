@@ -156,6 +156,40 @@ export const findAllArtistsBySearch = async ({ search }) => {
   return rows;
 };
 
+export const findArtistByDiscogsId = async (conn, discogsId) => {
+  const [rows] = await conn.query(
+    `
+    SELECT a.id, i.url AS image_url
+    FROM artist a
+    LEFT JOIN image i 
+      ON i.entity_type = 'artist' 
+      AND i.entity_id = a.id
+    WHERE a.discogs_id = ?
+    LIMIT 1
+  `,
+    [discogsId],
+  );
+
+  return rows[0] || null;
+};
+
+export const findArtistByName = async (conn, name) => {
+  const [rows] = await conn.query(
+    `
+    SELECT a.id, i.url AS image_url
+    FROM artist a
+    LEFT JOIN image i 
+      ON i.entity_type = 'artist' 
+      AND i.entity_id = a.id
+    WHERE a.name = ?
+    LIMIT 1
+  `,
+    [name],
+  );
+
+  return rows[0] || null;
+};
+
 /* ===============================
    CREATE
 ================================= */
@@ -205,12 +239,6 @@ export const addArtistWithImage = async ({
   );
 
   return artistId;
-};
-
-export const findArtistByName = async (connection, name) => {
-  const [rows] = await connection.query(`SELECT id FROM artist WHERE name = ?`, [name]);
-
-  return rows[0] || null;
 };
 
 /* ===============================
@@ -267,6 +295,33 @@ export const getArtistImage = async (connection, artistId) => {
   );
 
   return rows[0]?.url || '00_artist_default';
+};
+
+export const updateArtistImage = async (conn, artistId, filename) => {
+  // check si image existe déjà
+  const [existing] = await conn.query(
+    `SELECT id FROM image WHERE entity_type='artist' AND entity_id=?`,
+    [artistId],
+  );
+
+  if (existing.length) {
+    // update
+    await conn.query(`UPDATE image SET url=? WHERE entity_type='artist' AND entity_id=?`, [
+      filename,
+      artistId,
+    ]);
+  } else {
+    // insert
+    await conn.query(
+      `INSERT INTO image (entity_type, entity_id, type, url)
+       VALUES ('artist', ?, 'profile', ?)`,
+      [artistId, filename],
+    );
+  }
+};
+
+export const updateArtistDiscogsId = async (conn, id, discogsId) => {
+  await conn.query(`UPDATE artist SET discogs_id = ? WHERE id = ?`, [discogsId, id]);
 };
 
 /* ===============================

@@ -194,7 +194,15 @@ export const updateReleaseMain = async (id, release, conn) => {
   const fields = [];
   const values = [];
 
-  for (const key of ['title', 'year', 'country', 'barcode', 'notes', 'release_type']) {
+  for (const key of [
+    'title',
+    'year',
+    'country',
+    'barcode',
+    'notes',
+    'release_type',
+    'discogs_id',
+  ]) {
     if (release[key] !== undefined && release[key] !== null) {
       fields.push(`${key}=?`);
       values.push(release[key]);

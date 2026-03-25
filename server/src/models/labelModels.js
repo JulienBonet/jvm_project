@@ -132,6 +132,40 @@ export const findAllLabelsBySearch = async ({ search }) => {
   return rows;
 };
 
+export const findLabelByDiscogsId = async (conn, discogsId) => {
+  const [rows] = await conn.query(
+    `
+    SELECT l.id, i.url AS image_url
+    FROM label l
+    LEFT JOIN image i 
+      ON i.entity_type = 'label' 
+      AND i.entity_id = l.id
+    WHERE l.discogs_id = ?
+    LIMIT 1
+  `,
+    [discogsId],
+  );
+
+  return rows[0] || null;
+};
+
+export const findLabelByName = async (conn, name) => {
+  const [rows] = await conn.query(
+    `
+    SELECT l.id, i.url AS image_url
+    FROM label l
+    LEFT JOIN image i 
+      ON i.entity_type = 'label' 
+      AND i.entity_id = l.id
+    WHERE l.name = ?
+    LIMIT 1
+  `,
+    [name],
+  );
+
+  return rows[0] || null;
+};
+
 /* ===============================
    CREATE
 ================================= */
@@ -181,12 +215,6 @@ export const addLabelWithImage = async ({
   );
 
   return labelId;
-};
-
-export const findLabelByName = async (connection, name) => {
-  const [rows] = await connection.query(`SELECT id FROM label WHERE name = ?`, [name]);
-
-  return rows[0] || null;
 };
 
 /* ===============================

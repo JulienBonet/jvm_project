@@ -1,3 +1,4 @@
+// client\src\components\ReleaseDetailDialogDesktop\ReleaseEditForm.tsx
 import { useEffect, useState } from 'react';
 import {
   Typography,
@@ -75,7 +76,6 @@ function ReleaseEditForm({
   const [initialCover, setInitialCover] = useState('');
 
   console.info('releaseDetail in edit', releaseDetail);
-  console.info('coverPreview', coverPreview);
 
   // -----------------------
   // PREFILL 🔥
@@ -192,6 +192,7 @@ function ReleaseEditForm({
       data.artists?.map((a) => ({
         name: a.name,
         discogs_id: a.id,
+        thumbnail_url: a.thumbnail_url,
       })) ?? [],
     );
 
@@ -199,6 +200,7 @@ function ReleaseEditForm({
       data.labels?.map((l) => ({
         name: l.name,
         discogs_id: l.id,
+        thumbnail_url: l.thumbnail_url,
       })) ?? [],
     );
 
@@ -213,7 +215,13 @@ function ReleaseEditForm({
 
   const handleDiscogsFetch = async () => {
     try {
-      const res = await fetch(`${backendUrl}/api/release/discogs/${releaseDetail?.discogs_id}`);
+      console.info('fetch discog');
+      console.log('Discogs ID envoyé →', release.discogs_id);
+      if (!release.discogs_id) {
+        onSnackbar?.('Discogs ID manquant', 'error');
+        return;
+      }
+      const res = await fetch(`${backendUrl}/api/release/discogs/${release.discogs_id}`);
       const data = await res.json();
 
       console.info('data', data);
@@ -287,10 +295,14 @@ function ReleaseEditForm({
 
   return (
     <Stack spacing={3}>
-      <Typography sx={{
-            fontFamily: 'var(--font-01)',
-            fontSize: 'x-large',
-          }}>Edit Release</Typography>
+      <Typography
+        sx={{
+          fontFamily: 'var(--font-01)',
+          fontSize: 'x-large',
+        }}
+      >
+        Edit Release
+      </Typography>
 
       {/* DISCOGS */}
       <Card sx={{ mb: 3 }}>
@@ -384,21 +396,89 @@ function ReleaseEditForm({
         </CardContent>
       </Card>
 
-      {/* COVER */}
+      {/* GENRE / STYLE */}
       <Card sx={{ mb: 3 }}>
         <CardContent>
-          <Stack direction="column" spacing={2} alignItems="center">
-            <img
-              src={coverPreview}
-              alt="Cover Preview"
-              style={{ width: 150, height: 150, objectFit: 'cover', borderRadius: 4 }}
+          <Typography variant="h6" sx={{ mb: 2 }}>
+            Genre / Style
+          </Typography>
+
+          <Stack spacing={2}>
+            <EntitySelector
+              label="Genres"
+              endpoint="genre/search"
+              value={genres}
+              onChange={setGenres}
             />
 
-            <Button variant="outlined" component="label">
-              Upload
-              <input hidden type="file" onChange={handleCoverChange} />
-            </Button>
-            <Button onClick={removeCover}>Remove</Button>
+            <EntitySelector
+              label="Styles"
+              endpoint="style/search"
+              value={styles}
+              onChange={setStyles}
+            />
+          </Stack>
+        </CardContent>
+      </Card>
+
+      {/* ARTIST / LABEL */}
+      <Card sx={{ mb: 3 }}>
+        <CardContent>
+          <Typography variant="h6" sx={{ mb: 2 }}>
+            Artist / Label
+          </Typography>
+
+          <Stack spacing={2}>
+            <EntitySelector
+              label="Artists"
+              endpoint="artist/search"
+              value={artists}
+              onChange={setArtists}
+            />
+
+            <EntitySelector
+              label="Labels"
+              endpoint="label/search"
+              value={labels}
+              onChange={setLabels}
+            />
+          </Stack>
+        </CardContent>
+      </Card>
+
+      {/* EXTERNAL LINKS */}
+      <Card sx={{ mb: 3 }}>
+        <CardContent>
+          <Typography variant="h6" sx={{ mb: 2 }}>
+            External Links
+          </Typography>
+
+          <Stack spacing={2}>
+            <TextField
+              fullWidth
+              label="Discogs Link"
+              value={discogsLink}
+              onChange={(e) => setDiscogLink(e.target.value)}
+              error={discogsLink !== '' && !discogsLink.startsWith('https://')}
+              helperText={
+                discogsLink && !discogsLink.startsWith('https://')
+                  ? 'Le lien doit commencer par https://'
+                  : ''
+              }
+            />
+
+            <TextField
+              fullWidth
+              label="YouTube Link"
+              value={youtubeLink}
+              onChange={(e) => setYoutubeLink(e.target.value)}
+              error={youtubeLink !== '' && !youtubeLink.startsWith('https://')}
+              helperText={
+                youtubeLink && !youtubeLink.startsWith('https://')
+                  ? 'Le lien doit commencer par https://'
+                  : ''
+              }
+            />
           </Stack>
         </CardContent>
       </Card>
@@ -449,11 +529,33 @@ function ReleaseEditForm({
         </CardContent>
       </Card>
 
+      {/* COVER */}
+      <Card sx={{ mb: 3 }}>
+        <CardContent>
+          <Stack direction="column" spacing={2} alignItems="center">
+            <Typography variant="h6">Cover Image</Typography>
+            <img
+              src={coverPreview}
+              alt="Cover Preview"
+              style={{ width: 150, height: 150, objectFit: 'cover', borderRadius: 4 }}
+            />
+
+            <Button variant="outlined" component="label">
+              Upload
+              <input hidden type="file" onChange={handleCoverChange} />
+            </Button>
+            <Button onClick={removeCover}>Remove</Button>
+          </Stack>
+        </CardContent>
+      </Card>
+
       {/* ACTIONS */}
       <Card sx={{ mb: 3 }}>
         <CardContent>
           <Stack direction="row" spacing={2} alignItems="center" justifyContent="center">
-            <Button variant="outlined"color="error" onClick={onCancel}>Cancel</Button>
+            <Button variant="outlined" color="error" onClick={onCancel}>
+              Cancel
+            </Button>
             <Button variant="contained" onClick={handleSubmit}>
               Save
             </Button>

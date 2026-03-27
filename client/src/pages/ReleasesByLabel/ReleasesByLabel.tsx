@@ -9,6 +9,7 @@ import ArrowDownwardIcon from '@mui/icons-material/ArrowDownward';
 import RestartAltIcon from '@mui/icons-material/RestartAlt';
 import ReleaseCard from '../../components/ReleaseCard/ReleaseCard';
 import ReleaseDetailDialogDesktop from '../../components/ReleaseDetailDialogDesktop/ReleaseDetailDialogDesktop';
+import AdminSnackbar from '../../components/Admin/AdminSnackbar';
 import { Release } from '../../types/entities/release.types';
 import { useReleaseDetail } from '../../hooks/useReleaseDetail';
 import './releasesByLabel.css';
@@ -221,6 +222,7 @@ function ReleasesByLabel() {
         ))}
       </section>
 
+      {/* MODAL */}
       <ReleaseDetailDialogDesktop
         open={openDetail}
         onClose={handleCloseModal}
@@ -230,7 +232,10 @@ function ReleasesByLabel() {
         discogsLink={discogsLink}
         youtubeLink={youtubeLink}
         onUpdated={handleReleaseUpdated}
+        onSnackbar={showSnackbar}
       />
+
+      <AdminSnackbar snackbar={snackbar} setSnackbar={setSnackbar} />
     </div>
   );
 }

@@ -281,6 +281,7 @@ function ReleasesAdmin() {
         discogsLink={discogsLink}
         youtubeLink={youtubeLink}
         onUpdated={handleReleaseUpdated}
+        onSnackbar={showSnackbar}
       />
 
       <CreateRelease

@@ -254,6 +254,15 @@ function ReleaseEditForm({
   // -----------------------
   const handleSubmit = async () => {
     if (!releaseDetail) return;
+    // 🚨 validation de champs obligatoires avant envoi
+    if (!release.title.trim()) return onSnackbar?.('Le titre est obligatoire', 'error');
+    if (!release.release_type) return onSnackbar?.('Le type de release est obligatoire', 'error');
+    if (!disc.size) return onSnackbar?.('La taille du disque est obligatoire', 'error');
+    if (!disc.speed) return onSnackbar?.('La vitesse du disque est obligatoire', 'error');
+    if (artists.length === 0) return onSnackbar?.('Au moins un artiste est requis', 'error');
+    if (!tracks.length || tracks.some((t) => !t.title.trim() || !t.position.trim())) {
+      return onSnackbar?.('Chaque piste doit avoir une position et un titre', 'error');
+    }
 
     try {
       setLoading(true);
@@ -315,9 +324,9 @@ function ReleaseEditForm({
             borderRadius: 2,
 
             display: 'flex',
-            justifyContent: 'flex-end', // 👈 clé ici
+            justifyContent: 'flex-end',
             alignItems: 'center',
-            pb: 3, // petit espace en bas
+            pb: 3,
           }}
         >
           <Stack alignItems="center" spacing={1}>
@@ -345,7 +354,7 @@ function ReleaseEditForm({
             <Stack direction="row" spacing={2}>
               <TextField
                 label="Discogs ID"
-                value={release.discogs_id}
+                value={release.discogs_id ?? ''}
                 onChange={(e) =>
                   setRelease({
                     ...release,
@@ -585,7 +594,7 @@ function ReleaseEditForm({
             <Stack direction="column" spacing={2} alignItems="center">
               <Typography variant="h6">Cover Image</Typography>
               <img
-                src={coverPreview}
+                src={coverPreview || `${imageBaseUrl}/00_release_default`}
                 alt="Cover Preview"
                 style={{ width: 150, height: 150, objectFit: 'cover', borderRadius: 4 }}
               />

@@ -17,6 +17,7 @@ interface ReleaseDetailDialogDesktopProps {
   discogsLink?: string;
   youtubeLink?: string;
   onUpdated: () => void;
+  onSnackbar?: (msg: string, type?: 'success' | 'error') => void;
 }
 
 function ReleaseDetailDialogDesktop({
@@ -28,6 +29,7 @@ function ReleaseDetailDialogDesktop({
   discogsLink,
   youtubeLink,
   onUpdated,
+  onSnackbar,
 }: ReleaseDetailDialogDesktopProps) {
   const [mode, setMode] = useState<'read' | 'edit'>('read');
 
@@ -68,6 +70,7 @@ function ReleaseDetailDialogDesktop({
             imageBaseUrl={imageBaseUrl}
             onCancel={handleCancelEdit}
             onUpdated={handleUpdated}
+            onSnackbar={onSnackbar}
           />
         )}
       </DialogContent>

@@ -2,6 +2,7 @@
 import { Typography, CircularProgress, Divider, IconButton, Box, Button } from '@mui/material';
 import DiscogsLogo from '../../assets/images/Discogs.png';
 import YoutubeLogo from '../../assets/images/youtube.png';
+import EditIcon from '@mui/icons-material/Edit';
 import './releaseDetailDialogDesktop.css';
 import { ReleaseMDetail } from '../../types/entities/release.types';
 import { Track } from '../../types/entities/track.types';
@@ -207,8 +208,8 @@ console.info("releaseDetail in view", releaseDetail)
             )}
             {/* 🔥 BOUTON EDIT */}
             <Box sx={{ mt: 3, textAlign: 'center' }}>
-              <Button variant="contained" onClick={onEdit}>
-                Modifier
+              <Button variant="outlined" onClick={onEdit}>
+                <EditIcon />
               </Button>
             </Box>
           </section>

@@ -10,6 +10,7 @@ import {
 import CloseIcon from '@mui/icons-material/Close';
 import SearchIcon from '@mui/icons-material/Search';
 import EntityTable from '../../../components/Admin/EntityTable';
+import AddCircleOutlineIcon from '@mui/icons-material/AddCircleOutline';
 import ReleaseDetailDialogDesktop from '../../../components/ReleaseDetailDialogDesktop/ReleaseDetailDialogDesktop';
 import CreateRelease from '../../../components/Admin/CreateRelease';
 import DeleteConfirmDialog from '../../../components/Admin/DeleteConfirmDialog.jsx';
@@ -212,7 +213,7 @@ function ReleasesAdmin() {
             sx={{ backgroundColor: 'var(--color-02)' }}
             onClick={() => setOpenCreate(true)}
           >
-            Créer Release
+            <AddCircleOutlineIcon />
           </Button>
         </div>
       </section>

@@ -14,8 +14,13 @@ import {
   TableCell,
   TableRow,
 } from '@mui/material';
+import SaveIcon from '@mui/icons-material/Save';
+import CancelIcon from '@mui/icons-material/Cancel';
 import DeleteIcon from '@mui/icons-material/Delete';
 import CircularProgress from '@mui/material/CircularProgress';
+import AddCircleOutlineIcon from '@mui/icons-material/AddCircleOutline';
+import FileUploadIcon from '@mui/icons-material/FileUpload';
+import KeyboardReturnIcon from '@mui/icons-material/KeyboardReturn';
 import EntitySelector from '../Admin/EntitySelector';
 import {
   ReleaseMDetail,
@@ -581,7 +586,7 @@ function ReleaseEditForm({
               </TableBody>
             </Table>
             <Stack alignItems="center">
-              <Button sx={{ mt: 2 }} variant="contained" onClick={addTrack}>
+              <Button sx={{ mt: 2 }} variant="contained" onClick={addTrack} startIcon={<AddCircleOutlineIcon />}>
                 Add Track
               </Button>
             </Stack>
@@ -599,11 +604,11 @@ function ReleaseEditForm({
                 style={{ width: 150, height: 150, objectFit: 'cover', borderRadius: 4 }}
               />
 
-              <Button variant="outlined" component="label">
+              <Button variant="contained" component="label" startIcon={<FileUploadIcon />}>
                 Upload
                 <input hidden type="file" onChange={handleCoverChange} />
               </Button>
-              <Button onClick={removeCover}>Remove</Button>
+              <Button variant="outlined" color="error" onClick={removeCover} startIcon={<KeyboardReturnIcon />}>Remove</Button>
             </Stack>
           </CardContent>
         </Card>
@@ -612,10 +617,10 @@ function ReleaseEditForm({
         <Card sx={{ mb: 3 }}>
           <CardContent>
             <Stack direction="row" spacing={2} alignItems="center" justifyContent="center">
-              <Button variant="outlined" color="error" onClick={onCancel} disabled={loading}>
+              <Button variant="contained" color="error" onClick={onCancel} startIcon={<CancelIcon />} disabled={loading}>
                 Cancel
               </Button>
-              <Button variant="contained" onClick={handleSubmit} disabled={loading}>
+              <Button variant="contained" color="success" onClick={handleSubmit} startIcon={<SaveIcon />} disabled={loading}>
                 {loading ? 'Saving...' : 'Save'}
               </Button>
             </Stack>

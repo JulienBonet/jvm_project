@@ -49,11 +49,11 @@ export default function AdminDashboard() {
           ))}
         </Stack>
 
-        <Divider sx={{ mt: 2 }} />
+        <Divider sx={{ mt: 2 , borderColor: 'black'}} />
       </Box>
 
-      <Box>
-        <Outlet />
+      <Box >
+        <Outlet/>
       </Box>
     </Box>
   );

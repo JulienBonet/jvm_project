@@ -10,7 +10,6 @@ import {
 import CloseIcon from '@mui/icons-material/Close';
 import SearchIcon from '@mui/icons-material/Search';
 import EntityTable from '../../../components/Admin/EntityTable';
-import AddCircleOutlineIcon from '@mui/icons-material/AddCircleOutline';
 import ReleaseDetailDialogDesktop from '../../../components/ReleaseDetailDialogDesktop/ReleaseDetailDialogDesktop';
 import CreateRelease from '../../../components/Admin/CreateRelease';
 import DeleteConfirmDialog from '../../../components/Admin/DeleteConfirmDialog.jsx';
@@ -213,7 +212,7 @@ function ReleasesAdmin() {
             sx={{ backgroundColor: 'var(--color-02)' }}
             onClick={() => setOpenCreate(true)}
           >
-            <AddCircleOutlineIcon />
+            Créer release
           </Button>
         </div>
       </section>
@@ -221,57 +220,59 @@ function ReleasesAdmin() {
       {loading && <CircularProgress />}
       {error && <Typography color="error">{error}</Typography>}
 
-      <EntityTable
-        columns={[
-          { key: 'id', label: 'ID', width: '5%' },
-          { key: 'cover', label: '-', width: '5%' },
-          { key: 'title', label: 'TITRE', width: '30%' },
-          { key: 'artiste', label: 'ARTISTE', width: '25%' },
-          { key: 'type', label: 'TYPE', width: '4%' },
-          { key: 'speed', label: 'SPEED', width: '4%' },
-        ]}
-        data={paginatedReleases}
-        totalCount={filteredReleases.length}
-        page={page}
-        rowsPerPage={rowsPerPage}
-        onPageChange={(_e: unknown, newPage: number) => setPage(newPage)}
-        onRowsPerPageChange={(e: React.ChangeEvent<HTMLInputElement>) =>
-          setRowsPerPage(parseInt(e.target.value, 10))
-        }
-        renderRow={(Release: Release) => (
-          <>
-            <TableCell sx={{ fontFamily: 'var(--font-02)', fontSize: 'medium' }} align="center">
-              {Release.id}
-            </TableCell>
-            <TableCell sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
-              <img
-                src={`${cloudinaryUrl}/jvm/releases/${Release.image_url}`}
-                alt={Release.title}
-                style={{ height: 60 }}
-              />
-            </TableCell>
-            <TableCell sx={{ fontFamily: 'var(--font-02)', fontSize: 'medium' }} align="center">
-              {Release.title}
-            </TableCell>
-            <TableCell sx={{ fontFamily: 'var(--font-02)', fontSize: 'medium' }} align="center">
-              {Release.artists}
-            </TableCell>
-            <TableCell sx={{ fontFamily: 'var(--font-02)', fontSize: 'medium' }} align="center">
-              {Release.release_type}
-            </TableCell>
-            <TableCell sx={{ fontFamily: 'var(--font-02)', fontSize: 'medium' }} align="center">
-              {Release.disc_speed}
-            </TableCell>
-          </>
-        )}
-        onView={(release: Release) => {
-          fetchSelectedRelease(release.id);
-        }}
-        onDelete={(release: Release) => {
-          setReleaseToDelete(release);
-          setConfirmOpen(true);
-        }}
-      />
+
+        <EntityTable
+          columns={[
+            { key: 'id', label: 'ID', width: '5%' },
+            { key: 'cover', label: '-', width: '5%' },
+            { key: 'title', label: 'TITRE', width: '30%' },
+            { key: 'artiste', label: 'ARTISTE', width: '25%' },
+            { key: 'type', label: 'TYPE', width: '4%' },
+            { key: 'speed', label: 'SPEED', width: '4%' },
+          ]}
+          data={paginatedReleases}
+          totalCount={filteredReleases.length}
+          page={page}
+          rowsPerPage={rowsPerPage}
+          onPageChange={(_e: unknown, newPage: number) => setPage(newPage)}
+          onRowsPerPageChange={(e: React.ChangeEvent<HTMLInputElement>) =>
+            setRowsPerPage(parseInt(e.target.value, 10))
+          }
+          renderRow={(Release: Release) => (
+            <>
+              <TableCell sx={{ fontFamily: 'var(--font-02)', fontSize: 'medium' }} align="center">
+                {Release.id}
+              </TableCell>
+              <TableCell sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
+                <img
+                  src={`${cloudinaryUrl}/jvm/releases/${Release.image_url}`}
+                  alt={Release.title}
+                  style={{ height: 60 }}
+                />
+              </TableCell>
+              <TableCell sx={{ fontFamily: 'var(--font-02)', fontSize: 'medium' }} align="center">
+                {Release.title}
+              </TableCell>
+              <TableCell sx={{ fontFamily: 'var(--font-02)', fontSize: 'medium' }} align="center">
+                {Release.artists}
+              </TableCell>
+              <TableCell sx={{ fontFamily: 'var(--font-02)', fontSize: 'medium' }} align="center">
+                {Release.release_type}
+              </TableCell>
+              <TableCell sx={{ fontFamily: 'var(--font-02)', fontSize: 'medium' }} align="center">
+                {Release.disc_speed}
+              </TableCell>
+            </>
+          )}
+          onView={(release: Release) => {
+            fetchSelectedRelease(release.id);
+          }}
+          onDelete={(release: Release) => {
+            setReleaseToDelete(release);
+            setConfirmOpen(true);
+          }}
+        />
+
 
       <ReleaseDetailDialogDesktop
         open={openDetail}

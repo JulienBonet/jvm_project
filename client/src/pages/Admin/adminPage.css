@@ -1,19 +1,14 @@
 .admin_page_main {
   margin: 0.5rem 2rem 2rem 2rem;
-    flex-direction: column;
-  height: calc(100vh - 64px); /* moins le header global */
-  overflow: hidden;
+
 }
+
 .adminTopSection {
   display: flex;
   height: 50px;
   padding-bottom: 1.5rem;
-  border-bottom: 1px solid black;
-  position: sticky;
-  top: 0;                /* maintenant top 0 car conteneur scrollable */
-  z-index: 10;
-  background-color: #fff;
-  flex-shrink: 0;
+  border-bottom: 1px dashed black;
+
 }
 
 .Title-adminTopSection {
@@ -28,3 +23,4 @@
   justify-content: space-between;
   width: 60%;
 }
+

@@ -1,8 +1,8 @@
 import { NavLink, Outlet } from 'react-router-dom';
 import { Box, Button, Stack, Divider } from '@mui/material';
 
-const baseColor = '#18534f';
-const hoverColor = '#0f3a37';
+const baseColor = 'var(--color-02)';
+const hoverColor = 'var(--color-02h)';
 
 export default function AdminDashboard() {
   const links = [

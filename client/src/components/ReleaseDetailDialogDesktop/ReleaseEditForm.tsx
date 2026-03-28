@@ -47,7 +47,7 @@ function ReleaseEditForm({
 }: ReleaseEditFormProps) {
   const backendUrl = import.meta.env.VITE_BACKEND_URL;
 
-  const releaseTypes = ['LP', 'Album', 'Single', 'EP', 'Maxi-Single', 'Mini-Album'];
+  const releaseTypes = ['LP', 'Album', 'Single', 'EP', 'Maxi-Single', 'Mini-Album', 'Compilation', 'Coffret'];
   const releaseSizes = ['7', '10', '12'];
   const releaseSpeeds = ['33', '45', '78'];
 

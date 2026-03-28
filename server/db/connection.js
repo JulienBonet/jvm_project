@@ -1,3 +1,4 @@
+// server\db\connection.js
 import mysql from 'mysql2/promise';
 import dotenv from 'dotenv';
 

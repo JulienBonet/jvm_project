@@ -30,3 +30,6 @@ server/public/images/
 
 # Js Script
 server/uploadToCloudinary.js
+
+#scripts
+server/scripts

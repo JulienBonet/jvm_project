@@ -6,6 +6,7 @@ import artistRoutes from './routes/artistRoutes.js';
 import labelRoutes from './routes/labelRoutes.js';
 import genreRoutes from './routes/genreRoutes.js';
 import styleRoutes from './routes/styleRoutes.js';
+import statsRoutes from './routes/statsRoutes.js';
 import authRoutes from './routes/authRoutes.js';
 
 const router = Router();
@@ -16,6 +17,7 @@ router.use('/artist', artistRoutes);
 router.use('/label', labelRoutes);
 router.use('/genre', genreRoutes);
 router.use('/style', styleRoutes);
+router.use('/stats', statsRoutes);
 router.use('/auth', authRoutes);
 
 export default router;

@@ -12,6 +12,7 @@ import ArtistsAdmin from '../pages/Admin/ArtistsAdmin/ArtistsAdmin.tsx';
 import LabelsAdmin from '../pages/Admin/LabelsAdmin/LabelsAdmin.tsx';
 import GenresAdmin from '../pages/Admin/GenresAdmin/GenresAdmin.tsx';
 import StylesAdmin from '../pages/Admin/StylesAdmin/StylesAdmin.tsx';
+import StatsPage from '../pages/Admin/StatsPage/StatsPage.tsx';
 import ProtectedRoute from '../components/ProtectedRoute.tsx';
 import Login from '../pages/Login/Login.tsx';
 
@@ -74,6 +75,7 @@ const router = createBrowserRouter([
           { path: 'labels', element: <LabelsAdmin /> },
           { path: 'genres', element: <GenresAdmin /> },
           { path: 'styles', element: <StylesAdmin /> },
+          { path: 'stats', element: <StatsPage /> },
         ],
       },
       { path: '*', element: <NotFound /> },

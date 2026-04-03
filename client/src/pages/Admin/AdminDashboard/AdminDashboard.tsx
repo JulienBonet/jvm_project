@@ -11,6 +11,7 @@ export default function AdminDashboard() {
     { label: 'Labels', path: 'labels' },
     { label: 'Genres', path: 'genres' },
     { label: 'Styles', path: 'styles' },
+    { label: 'Stats', path: 'stats' },
   ];
 
   return (

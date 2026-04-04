@@ -23,7 +23,7 @@ const __dirname = new URL('.', import.meta.url).pathname;
 app.use(express.static(path.join(__dirname, '../client/dist')));
 
 // fallback pour React Router
-app.get('/*', (req, res) => {
+app.get('/:any(*)', (req, res) => {
   res.sendFile(path.join(__dirname, '../client/dist/index.html'));
 });
 

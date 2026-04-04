@@ -121,10 +121,14 @@ export default function StatsPage() {
   });
 
   return (
-    <Box p={3}>
-      <Typography variant="h4" mb={3}>
-        📊 Dashboard
+    <main className="admin_page_main">
+      <section className="adminTopSection">
+      <Typography 
+        className="Title-adminTopSection"
+        sx={{ fontSize: 24, fontWeight: 'bold', fontFamily: 'var(--font-01)' }}>
+        Stats Dashboard
       </Typography>
+      </section>
 
       {/* GLOBAL STATS */}
       <Box display="flex" flexWrap="wrap" gap={2} mb={3}>
@@ -139,9 +143,9 @@ export default function StatsPage() {
       {/* TOP LISTS */}
       <Box display="flex" flexWrap="wrap" gap={2}>
         <TopList title="Top Genres" items={stats.topGenres} />
-        <TopList title="Top Labels" items={stats.topLabels} />
         <TopList title="Top Artists" items={stats.topArtists} />
+        <TopList title="Top Labels" items={stats.topLabels} />
       </Box>
-    </Box>
+    </main>
   );
 }

@@ -12,7 +12,9 @@ yarn-error.log*
 # Env files
 .env
 server/.env
+server/.env.production
 client/.env
+client/.env.produtcion
 
 # Vite / build
 dist/

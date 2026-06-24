@@ -112,7 +112,7 @@ function Header() {
                           <LogoutIcon sx={{ fontSize: 20, color: 'var(--color-04)', }} />
                           <Typography
                             sx={{
-                              fontFamily: 'var(--font-01)',
+                              fontFamily: 'var(--font-01) !important',
                               fontSize: '1.1rem',
                               fontWeight: 500,
                               color: 'var(--color-04)',
